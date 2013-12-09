@@ -2,13 +2,14 @@ NAME            =       testAudio
 
 CXXFLAGS        =      	-Iinclude -g3
 
-LDFLAGS         =	-lportaudio
+LDFLAGS         =	-lportaudio -lopus
 
 CXX             =       g++
 
 RM              =       rm -fv
 
 SRC             =       src/main.cpp		\
+			src/Opus.cpp		\
 			src/BabelPortAudio.cpp
 
 OBJ             =       $(SRC:.cpp=.o)
