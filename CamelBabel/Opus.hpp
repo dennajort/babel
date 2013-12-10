@@ -4,19 +4,22 @@
 #include "opus/opus.h"
 #include "opus/opus_defines.h"
 #include "opus/opus_types.h"
+#include "IEncoder.hpp"
+#include "BabelException.hpp"
 
-class	Opus
+class	Opus : public IEncoder
 {
 public:
-  Opus(const int samplingRate);
+  Opus(const int samplingRate, const int frameSize);
   ~Opus();
-  unsigned char	*encode(const short *pcm, const int frameSize);
-  unsigned char	*encodeFloat(const float *pcm, const int frameSize);
-  short		*decode(const unsigned char *data, const int frameSize0);
-  float		*decodeFloat(const unsigned char *data, const int frameSize0);
+  void	encode(const float *pcm);
+  void 	decode(const unsigned char *data, float *decodedData);
+  unsigned char *getEncodedData() const;
 private:
   int			_samplingRate;
   int			_maxDataBytes;
+  int			_frameSize;
+  unsigned char		*_compressedData;
   OpusEncoder		*_encoder;
   OpusDecoder		*_decoder;
   static const int	nbChannel = 1;
