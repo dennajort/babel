@@ -26,13 +26,13 @@ Opus::~Opus()
 void Opus::encode(const float *pcm)
 {
   if (opus_encode_float(_encoder, pcm, _frameSize, _compressedData, _maxDataBytes) < 1)
-    throw std::exception();
+    throw BabelException("Opus encode error");
 }
 
 void Opus::decode(const unsigned char *data, float *decodedData)
 {
   if (opus_decode_float(_decoder, data, _maxDataBytes, decodedData, _frameSize, decodeFec) < 1)
-    throw std::exception();
+    throw BabelException("Opus decode error");
 }
 
 unsigned char *Opus::getEncodedData() const

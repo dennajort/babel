@@ -5,6 +5,7 @@
 #include "opus/opus_defines.h"
 #include "opus/opus_types.h"
 #include "IEncoder.hpp"
+#include "BabelException.hpp"
 
 class	Opus : public IEncoder
 {
