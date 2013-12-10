@@ -1,0 +1,188 @@
+#include <QMessageBox>
+#include <QSettings>
+#include <QInputDialog>
+#include "MainWindow.hpp"
+#include "ui_MainWindow.h"
+#include "SettingsDialog.hpp"
+#include "ChatWidget.hpp"
+
+MainWindow::MainWindow(QWidget *parent) :
+  QMainWindow(parent),
+  _ui(new Ui::MainWindow),
+  _availableImg(":/images/available.png"),
+  _awayImg(":/images/away.png"),
+  _offlineImg(":/images/offline.png")
+{
+  _ui->setupUi(this);
+  readSettings();
+  createTrayIcon();
+  _ui->statusBar->showMessage("Disconnected");
+}
+
+MainWindow::~MainWindow()
+{
+  delete _ui;
+}
+
+void MainWindow::aboutToQuit()
+{
+  writeSettings();
+  qApp->quit();
+}
+
+void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+  if (reason == QSystemTrayIcon::Trigger
+      || reason == QSystemTrayIcon::DoubleClick)
+    changeMainWindowState();
+}
+
+void MainWindow::changeMainWindowState()
+{
+  setVisible(!isVisible());
+}
+
+void MainWindow::about()
+{
+  QMessageBox::about(this, "CamelBabel About",
+                     "CamelBabel is a VOIP Client\n"        \
+                     "CamelCorp is a camel company\n"                                 \
+                     "All camel reserved to post_l, farcy_b, gossel_j, lingua_a, teisse_l, zanchi_r");
+}
+
+void MainWindow::settings()
+{
+  SettingsDialog settingsDlg(this);
+  settingsDlg.exec();
+}
+
+void MainWindow::addContact()
+{
+  QString	contact = QInputDialog::getText(this, "Add Contact", "Username:");
+
+  if (!contact.isEmpty() && !contactAlreadyAdded(contact))
+    addChat(contact);
+}
+
+void MainWindow::deleteContact()
+{
+  QListWidgetItem	*item = _ui->contactList->currentItem();
+
+  if (item)
+    {
+      int ret = QMessageBox::warning(this, "CamelBabel", "You are about to remove " + item->text()
+                                     + " from your contact list.\n"	\
+                                     "Do you want to save the modification?",
+                                     QMessageBox::Cancel | QMessageBox::Save);
+      if (ret == QMessageBox::Save)
+        {
+          QWidget		*widget = _ui->chatStack->currentWidget();
+          _ui->contactList->takeItem(_ui->contactList->row(item));
+          _ui->chatStack->removeWidget(widget);
+          delete item;
+          delete widget;
+        }
+    }
+}
+
+void MainWindow::contactSelected()
+{
+  _ui->chatStack->setCurrentIndex(_ui->contactList->currentRow());
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+  if (_trayIcon->isVisible())
+    {
+      event->ignore();
+      hide();
+    }
+  else
+    {
+      event->accept();
+      aboutToQuit();
+    }
+}
+
+void MainWindow::addChat(const QString &contact)
+{
+  QListWidgetItem	*item = new QListWidgetItem;
+  ChatWidget		*chat = new ChatWidget(_me, contact, this);
+
+  item->setText(contact);
+  item->setIcon(_offlineImg);
+  _ui->contactList->addItem(item);
+  _ui->chatStack->addWidget(chat);
+}
+
+bool MainWindow::contactAlreadyAdded(const QString &contact) const
+{
+  for (int i = 0; i < _ui->contactList->count(); ++i)
+    if (_ui->contactList->item(i)->text() == contact)
+      return (true);
+  return (false);
+}
+
+void MainWindow::moveListItemToPos(const int fromPos, const int toPos)
+{
+  _ui->contactList->insertItem(toPos, _ui->contactList->takeItem(fromPos));
+}
+
+void MainWindow::moveChatWidgetToPos(const int fromPos, const int toPos)
+{
+  QWidget	*widget = _ui->chatStack->widget(fromPos);
+  _ui->chatStack->removeWidget(widget);
+  _ui->chatStack->insertWidget(toPos, widget);
+}
+
+void MainWindow::moveContactToPos(const QString &contact, const int pos)
+{
+ for (int i = 0; i < _ui->contactList->count(); ++i)
+    if (_ui->contactList->item(i)->text() == contact)
+      {
+        if (i == pos) return;
+        moveListItemToPos(i, pos);
+        moveChatWidgetToPos(i, pos);
+        _ui->contactList->setCurrentRow(pos);
+        _ui->chatStack->setCurrentIndex(pos);
+        return;
+      }
+}
+
+void MainWindow::createTrayIcon()
+{
+  _trayIconMenu = new QMenu(this);
+  _trayIconMenu->addAction(_ui->actionSettings);
+  _trayIconMenu->addSeparator();
+  _trayIconMenu->addAction(_ui->actionQuit);
+
+  _trayIcon = new QSystemTrayIcon(this);
+  _trayIcon->setContextMenu(_trayIconMenu);
+  _trayIcon->setToolTip("CamelBabel");
+  _trayIcon->setIcon(QIcon(":/images/main_icon.png"));
+  connect(_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+          this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
+  _trayIcon->show();
+}
+
+void MainWindow::writeSettings()
+{
+  QSettings     settings;
+
+  settings.beginGroup("MainWindow");
+  settings.setValue("size", size());
+  settings.setValue("pos", pos());
+  settings.endGroup();
+}
+
+void MainWindow::readSettings()
+{
+  QSettings     settings;
+  QString       contacts_str;
+
+  settings.beginGroup("MainWindow");
+  resize(settings.value("size", QSize(400, 300)).toSize());
+  move(settings.value("pos", QPoint(200, 200)).toPoint());
+  settings.endGroup();
+  _me = settings.value("account/username").toString();
+}
