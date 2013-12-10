@@ -2,6 +2,7 @@
 #include <functional>
 #include "RTPCallManager.hpp"
 #include "PortAudio.hpp"
+#include "Opus.hpp"
 #include "rtp.hpp"
 
 RTPCallManager::RTPCallManager(QObject *parent) :
@@ -9,7 +10,8 @@ RTPCallManager::RTPCallManager(QObject *parent) :
 {
   using namespace std::placeholders;
 
-  _audioAPI = createPortAudio(44100, 256, std::bind(&RTPCallManager::handleAudio, this, _1, _2, _3, _4));
+  _audioAPI = createPortAudio(48000, 480, std::bind(&RTPCallManager::handleAudio, this, _1, _2, _3, _4));
+  _encoder = new Opus(48000, 480);
   initSocket();
   t_rtp rtp;
   rtp.rtp_ver = 2;
@@ -102,7 +104,11 @@ void RTPCallManager::processRTPDatagram(QByteArray &datagram)
 void RTPCallManager::handleAudio(const float *input, float *output,
                                  unsigned long frameCount, double currentTime)
 {
+  unsigned char *data;
   (void)currentTime;
-  for (unsigned long i = 0; i < frameCount; ++i)
-    *output++ = *input++;
+  _encoder->encode(input);
+  data = _encoder->getEncodedData();
+  _encoder->decode(data, output);
+  // for (unsigned long i = 0; i < frameCount; ++i)
+  //   *output++ = *input++;
 }

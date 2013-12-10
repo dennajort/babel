@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QUdpSocket>
 #include "IAudioAPI.hpp"
+#include "IEncoder.hpp"
 
 class RTPCallManager : public QObject
 {
@@ -11,9 +12,9 @@ class RTPCallManager : public QObject
 public:
   explicit  RTPCallManager(QObject *parent = 0);
   virtual   ~RTPCallManager();
-  
+
 signals:
-  
+
 public slots:
   void sendDatagram(const QByteArray &datagram);
   void call();
@@ -34,6 +35,7 @@ private:
   quint16             _contactPort;
 
   IAudioAPI           *_audioAPI;
+  IEncoder            *_encoder;
 };
 
 #endif // RTPCALLMANAGER_HPP
