@@ -6,7 +6,7 @@
 
 QT       += core gui network
 
-LIBS += -lportaudio
+LIBS += -lportaudio -lopus
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     SettingsDialog.cpp \
     ChatWidget.cpp \
     RTPCallManager.cpp \
-    ConnectionDialog.cpp
+    ConnectionDialog.cpp \
+    Opus.cpp
 
 HEADERS  += MainWindow.hpp \
     SettingsDialog.hpp \
@@ -29,7 +30,8 @@ HEADERS  += MainWindow.hpp \
     rtp.hpp \
     ConnectionDialog.hpp \
     BabelException.hpp \
-    PortAudio.hpp
+    PortAudio.hpp \
+    Opus.hpp
 
 FORMS    += MainWindow.ui \
     SettingsDialog.ui \
