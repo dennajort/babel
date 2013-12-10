@@ -12,7 +12,7 @@ Opus::Opus(const int samplingRate, const int frameSize)
   _encoder = opus_encoder_create(_samplingRate, nbChannel, OPUS_APPLICATION_VOIP, &encoderError);
   _decoder = opus_decoder_create(_samplingRate, nbChannel, &decoderError);
   if (encoderError != OPUS_OK || decoderError != OPUS_OK)
-    throw std::exception();
+    throw BabelException("Opus creation error");
   opus_encoder_ctl(_encoder, OPUS_GET_BANDWIDTH(&_maxDataBytes));
   _compressedData = new unsigned char[_maxDataBytes];
 }
