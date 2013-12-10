@@ -31,6 +31,7 @@ HEADERS  += MainWindow.hpp \
     ConnectionDialog.hpp \
     BabelException.hpp \
     PortAudio.hpp \
+    IEncoder.hpp \
     Opus.hpp
 
 FORMS    += MainWindow.ui \
