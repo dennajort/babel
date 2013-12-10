@@ -29,7 +29,8 @@ HEADERS  += MainWindow.hpp \
     rtp.hpp \
     ConnectionDialog.hpp \
     BabelException.hpp \
-    PortAudio.hpp
+    PortAudio.hpp \
+    IAudioAPI.hpp
 
 FORMS    += MainWindow.ui \
     SettingsDialog.ui \

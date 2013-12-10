@@ -11,7 +11,9 @@ MainWindow::MainWindow(QWidget *parent) :
   _ui(new Ui::MainWindow),
   _availableImg(":/images/available.png"),
   _awayImg(":/images/away.png"),
-  _offlineImg(":/images/offline.png")
+  _offlineImg(":/images/offline.png"),
+  _inCall(false),
+  _rtpCallManager(new RTPCallManager(this))
 {
   _ui->setupUi(this);
   readSettings();
@@ -21,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+  delete _rtpCallManager;
   delete _ui;
 }
 
@@ -90,6 +93,18 @@ void MainWindow::contactSelected()
   _ui->chatStack->setCurrentIndex(_ui->contactList->currentRow());
 }
 
+void MainWindow::callStarted()
+{
+  _inCall = true;
+  emit changeCallButton(false);
+}
+
+void MainWindow::callFinished()
+{
+  _inCall = false;
+  emit changeCallButton(true);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
   if (_trayIcon->isVisible())
@@ -106,11 +121,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::addChat(const QString &contact)
 {
-  QListWidgetItem	*item = new QListWidgetItem;
-  ChatWidget		*chat = new ChatWidget(_me, contact, this);
+  QListWidgetItem	*item = new QListWidgetItem(_offlineImg, contact);
+  ChatWidget		*chat = new ChatWidget(_me, contact, _inCall, _rtpCallManager, this);
 
-  item->setText(contact);
-  item->setIcon(_offlineImg);
+  connect(chat, SIGNAL(callStarted()),
+          this, SLOT(callStarted()));
+  connect(chat, SIGNAL(callFinished()),
+          this, SLOT(callFinished()));
+  connect(this, SIGNAL(changeCallButton(bool)),
+          chat, SLOT(setCallButton(bool)));
   _ui->contactList->addItem(item);
   _ui->chatStack->addWidget(chat);
 }
@@ -178,11 +197,9 @@ void MainWindow::writeSettings()
 void MainWindow::readSettings()
 {
   QSettings     settings;
-  QString       contacts_str;
 
   settings.beginGroup("MainWindow");
   resize(settings.value("size", QSize(400, 300)).toSize());
   move(settings.value("pos", QPoint(200, 200)).toPoint());
   settings.endGroup();
-  _me = settings.value("account/username").toString();
 }

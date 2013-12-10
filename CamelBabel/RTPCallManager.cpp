@@ -1,17 +1,15 @@
 #include <QtEndian>
 #include <functional>
 #include "RTPCallManager.hpp"
+#include "PortAudio.hpp"
 #include "rtp.hpp"
 
 RTPCallManager::RTPCallManager(QObject *parent) :
   QObject(parent)
 {
   using namespace std::placeholders;
-  auto portAudio = createPortAudio(44100, 256, std::bind(&RTPCallManager::handleAudio, this, _1, _2, _3, _4, _5));
 
-  portAudio.start();
-  Pa_Sleep(10000);
-  portAudio.stop();
+  _audioAPI = createPortAudio(44100, 256, std::bind(&RTPCallManager::handleAudio, this, _1, _2, _3, _4));
   initSocket();
   t_rtp rtp;
   rtp.rtp_ver = 2;
@@ -26,6 +24,11 @@ RTPCallManager::RTPCallManager(QObject *parent) :
   sendDatagram(QByteArray((char*)&rtp, sizeof(rtp)));
 }
 
+RTPCallManager::~RTPCallManager()
+{
+  delete _audioAPI;
+}
+
 void RTPCallManager::sendDatagram(const QByteArray &datagram)
 {
   _udpSocket->writeDatagram(datagram.data(), datagram.size(),
@@ -34,17 +37,12 @@ void RTPCallManager::sendDatagram(const QByteArray &datagram)
 
 void RTPCallManager::call()
 {
-
+  _audioAPI->start();
 }
 
 void RTPCallManager::finishCall()
 {
-
-}
-
-void RTPCallManager::resumePlaying()
-{
-
+  _audioAPI->stop();
 }
 
 void RTPCallManager::readPendingDatagrams()
@@ -69,7 +67,6 @@ void RTPCallManager::initSocket()
     _udpSocket->bind(QHostAddress::Any, 4242);
     connect(_udpSocket, SIGNAL(readyRead()),
             this, SLOT(readPendingDatagrams()));
-    qDebug() << _udpSocket->localPort();
 }
 
 void RTPCallManager::processRTPDatagram(QByteArray &datagram)
@@ -102,23 +99,10 @@ void RTPCallManager::processRTPDatagram(QByteArray &datagram)
   qDebug() << "PAYLOAD:" << &datagram.data()[rtpHeaderLength];
 }
 
-void RTPCallManager::startConversation()
-{
-
-}
-
-void RTPCallManager::stopConversation()
-{
-
-}
-
 void RTPCallManager::handleAudio(const float *input, float *output,
-				 unsigned long frameCount,
-				 const PaStreamCallbackTimeInfo *timeInfo,
-				 PaStreamCallbackFlags statusFlags)
+                                 unsigned long frameCount, double currentTime)
 {
-  (void)timeInfo;
-  (void)statusFlags;
+  (void)currentTime;
   for (unsigned long i = 0; i < frameCount; ++i)
     *output++ = *input++;
 }

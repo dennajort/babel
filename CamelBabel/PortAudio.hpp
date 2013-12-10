@@ -2,10 +2,11 @@
 #define	BABELPORTAUDIO_HPP
 
 #include <portaudio.h>
+#include "IAudioAPI.hpp"
 #include "BabelException.hpp"
 
 template <typename T>
-class PortAudio
+class PortAudio : public IAudioAPI
 {
 public:
   PortAudio(double sampleRate, unsigned long framesPerBuffer, T t)
@@ -22,7 +23,7 @@ public:
       throw BabelException(Pa_GetErrorText(err));
   }
 
-  PortAudio(const PortAudio &pa) : _stream(pa._stream), _t(pa._t) {}
+  PortAudio(const PortAudio &pa);
 
   ~PortAudio()
   {
@@ -53,13 +54,15 @@ private:
   static int callback(const void *input, void *output,
 		      unsigned long frameCount,
 		      const PaStreamCallbackTimeInfo *timeInfo,
-		      PaStreamCallbackFlags statusFlags, void *userData)
+		      PaStreamCallbackFlags statusFlags,
+		      void *userData)
   {
     PortAudio	*pThis = reinterpret_cast<PortAudio*>(userData);
 
+    (void)statusFlags;
     pThis->_t(reinterpret_cast<const float *>(input),
 	      reinterpret_cast<float *>(output),
-	      frameCount, timeInfo, statusFlags);
+	      frameCount, timeInfo->currentTime);
     return (paContinue);
   }
 
@@ -68,9 +71,9 @@ private:
 };
 
 template <typename T>
-PortAudio<T> createPortAudio(double sampleRate, unsigned long framesPerBuffer, const T &t)
+PortAudio<T> *createPortAudio(double sampleRate, unsigned long framesPerBuffer, const T &t)
 {
-  return (PortAudio<T>(sampleRate, framesPerBuffer, t));
+  return (new PortAudio<T>(sampleRate, framesPerBuffer, t));
 }
 
 #endif // PORTAUDIO_HPP

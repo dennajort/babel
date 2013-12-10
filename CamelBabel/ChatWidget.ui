@@ -157,5 +157,25 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>callButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ChatWidget</receiver>
+   <slot>callClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>28</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>callClicked()</slot>
+ </slots>
 </ui>

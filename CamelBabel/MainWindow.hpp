@@ -6,6 +6,7 @@
 #include <QMenu>
 #include <QListWidget>
 #include <QCloseEvent>
+#include "RTPCallManager.hpp"
 
 namespace Ui {
   class MainWindow;
@@ -28,6 +29,11 @@ public slots:
   void		addContact();
   void		deleteContact();
   void          contactSelected();
+  void          callStarted();
+  void          callFinished();
+
+signals:
+  void          changeCallButton(bool);
 
 protected:
   virtual void	closeEvent(QCloseEvent *event);
@@ -52,6 +58,10 @@ private:
   QMenu                   *_trayIconMenu;
 
   QString                  _me;
+
+  bool                    _inCall;
+
+  RTPCallManager          *_rtpCallManager;
 };
 
 #endif // MAINWINDOW_HPP

@@ -3,13 +3,14 @@
 
 #include <QObject>
 #include <QUdpSocket>
-#include "PortAudio.hpp"
+#include "IAudioAPI.hpp"
 
 class RTPCallManager : public QObject
 {
   Q_OBJECT
 public:
-  explicit RTPCallManager(QObject *parent = 0);
+  explicit  RTPCallManager(QObject *parent = 0);
+  virtual   ~RTPCallManager();
   
 signals:
   
@@ -17,7 +18,6 @@ public slots:
   void sendDatagram(const QByteArray &datagram);
   void call();
   void finishCall();
-  void resumePlaying();
 
 private slots:
   void readPendingDatagrams();
@@ -25,17 +25,15 @@ private slots:
 private:
   void initSocket();
   void processRTPDatagram(QByteArray &datagram);
-  void startConversation();
-  void stopConversation();
   void handleAudio(const float *input, float *output,
-                   unsigned long frameCount,
-                   const PaStreamCallbackTimeInfo *timeInfo,
-                   PaStreamCallbackFlags statusFlags);
+                   unsigned long frameCount, double currentTime);
 
   QUdpSocket          *_udpSocket;
 
   QHostAddress        _contact;
   quint16             _contactPort;
+
+  IAudioAPI           *_audioAPI;
 };
 
 #endif // RTPCALLMANAGER_HPP
