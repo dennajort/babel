@@ -37,7 +37,8 @@ HEADERS  += MainWindow.hpp \
 
 FORMS    += MainWindow.ui \
     SettingsDialog.ui \
-    ChatWidget.ui
+    ChatWidget.ui \
+    ConnectionDialog.ui
 
 RESOURCES += \
     CamelBabel.qrc
