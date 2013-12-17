@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     ChatWidget.cpp \
     RTPCallManager.cpp \
     ConnectionDialog.cpp \
-    Opus.cpp
+    Opus.cpp \
+    SipHandler.cpp
 
 HEADERS  += MainWindow.hpp \
     SettingsDialog.hpp \
@@ -33,7 +34,9 @@ HEADERS  += MainWindow.hpp \
     PortAudio.hpp \
     IAudioAPI.hpp \
     IEncoder.hpp \
-    Opus.hpp
+    Opus.hpp \
+    SipProtocol.hpp \
+    SipHandler.hpp
 
 FORMS    += MainWindow.ui \
     SettingsDialog.ui \
