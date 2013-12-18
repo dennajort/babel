@@ -2,6 +2,9 @@
 #define __TCP_SERVER_HH__
 
 #include	<boost/asio.hpp>
+#include	"TcpClient.hh"
+
+class ServerData;
 
 class TcpServer
 {
@@ -10,9 +13,10 @@ public:
 
 private:
   void	startAccept();
-  void	handleAccept(TcpClient::pointer, const boost::system::error_code &);
+  void	handleAccept(TcpClient *, const boost::system::error_code &);
 
-  boost::asio::ip::tcp::acceptor _acceptor;
+  boost::asio::ip::tcp::acceptor	_acceptor;
+  ServerData				_data;
 };
 
 #endif
