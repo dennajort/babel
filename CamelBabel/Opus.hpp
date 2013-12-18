@@ -13,13 +13,14 @@ public:
   Opus(const int samplingRate, const int frameSize);
   ~Opus();
   void	encode(const float *pcm);
-  void 	decode(const unsigned char *data, float *decodedData);
+  void 	decode(const unsigned char *data, int len, float *decodedData);
   unsigned char *getEncodedData() const;
   int getEncodedSize() const;
 private:
   int			_samplingRate;
   int			_maxDataBytes;
   int			_frameSize;
+  int                   _compressedSize;
   unsigned char		*_compressedData;
   OpusEncoder		*_encoder;
   OpusDecoder		*_decoder;

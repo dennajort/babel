@@ -5,7 +5,8 @@
 Opus::Opus(const int samplingRate, const int frameSize)
   : _samplingRate(samplingRate),
     _maxDataBytes(samplingRate * 1024),
-    _frameSize(frameSize)
+    _frameSize(frameSize),
+    _compressedSize(0)
 {
   int	encoderError;
   int	decoderError;
@@ -31,17 +32,15 @@ Opus::~Opus()
 
 void Opus::encode(const float *pcm)
 {
-  int error;
-
-  if ((error = opus_encode_float(_encoder, pcm, _frameSize, _compressedData, _maxDataBytes)) < 0)
-    throw BabelException(opus_strerror(error));
+  if ((_compressedSize = opus_encode_float(_encoder, pcm, _frameSize, _compressedData, _maxDataBytes)) < 0)
+    throw BabelException(opus_strerror(_compressedSize));
 }
 
-void Opus::decode(const unsigned char *data, float *decodedData)
+void Opus::decode(const unsigned char *data, int len, float *decodedData)
 {
   int error;
 
-  if ((error = opus_decode_float(_decoder, data, _maxDataBytes, decodedData, _frameSize, decodeFec)) < 0)
+  if ((error = opus_decode_float(_decoder, data, len, decodedData, _frameSize, decodeFec)) < 0)
     throw BabelException(opus_strerror(error));
 }
 
@@ -52,5 +51,5 @@ unsigned char *Opus::getEncodedData() const
 
 int Opus::getEncodedSize() const
 {
-  return (_maxDataBytes);
+  return (_compressedSize);
 }

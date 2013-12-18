@@ -35,7 +35,7 @@ HEADERS  += MainWindow.hpp \
     IAudioAPI.hpp \
     IEncoder.hpp \
     Opus.hpp \
-    RTPPacket.hpp
+    RTPPacket.hpp \
     SipProtocol.hpp \
     SipHandler.hpp
 
