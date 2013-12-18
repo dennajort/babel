@@ -34,10 +34,7 @@ void Opus::encode(const float *pcm)
   int error;
 
   if ((error = opus_encode_float(_encoder, pcm, _frameSize, _compressedData, _maxDataBytes)) < 0)
-    {
-      std::cout << "encode error = " << error << std::endl;
-      throw BabelException("Opus encode error");
-    }
+    throw BabelException(opus_strerror(error));
 }
 
 void Opus::decode(const unsigned char *data, float *decodedData)
@@ -45,13 +42,15 @@ void Opus::decode(const unsigned char *data, float *decodedData)
   int error;
 
   if ((error = opus_decode_float(_decoder, data, _maxDataBytes, decodedData, _frameSize, decodeFec)) < 0)
-    {
-      std::cout << "decode error = " << error << std::endl;
-      throw BabelException("Opus decode error");
-    }
+    throw BabelException(opus_strerror(error));
 }
 
 unsigned char *Opus::getEncodedData() const
 {
   return (_compressedData);
+}
+
+int Opus::getEncodedSize() const
+{
+  return (_maxDataBytes);
 }

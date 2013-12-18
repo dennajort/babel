@@ -33,7 +33,8 @@ HEADERS  += MainWindow.hpp \
     PortAudio.hpp \
     IAudioAPI.hpp \
     IEncoder.hpp \
-    Opus.hpp
+    Opus.hpp \
+    RTPPacket.hpp
 
 FORMS    += MainWindow.ui \
     SettingsDialog.ui \

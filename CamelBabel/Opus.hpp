@@ -15,6 +15,7 @@ public:
   void	encode(const float *pcm);
   void 	decode(const unsigned char *data, float *decodedData);
   unsigned char *getEncodedData() const;
+  int getEncodedSize() const;
 private:
   int			_samplingRate;
   int			_maxDataBytes;

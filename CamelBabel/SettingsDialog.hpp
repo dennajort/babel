@@ -15,8 +15,9 @@ class SettingsDialog : public QDialog
 public:
   explicit            SettingsDialog(QWidget *parent = 0);
   virtual             ~SettingsDialog();
-  
+
 public slots:
+  virtual void        accept();
 
 private:
   Ui::SettingsDialog        *_ui;

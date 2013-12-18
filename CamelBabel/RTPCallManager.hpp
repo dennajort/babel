@@ -3,6 +3,9 @@
 
 #include <QObject>
 #include <QUdpSocket>
+#include <QList>
+#include <QMutex>
+#include "RTPPacket.hpp"
 #include "IAudioAPI.hpp"
 #include "IEncoder.hpp"
 
@@ -25,7 +28,8 @@ private slots:
 
 private:
   void initSocket();
-  void processRTPDatagram(QByteArray &datagram);
+  void processRTPDatagram(QByteArray *datagram);
+  void createRTPFromAudio();
   void handleAudio(const float *input, float *output,
                    unsigned long frameCount, double currentTime);
 
@@ -33,6 +37,9 @@ private:
 
   QHostAddress        _contact;
   quint16             _contactPort;
+
+  QList<RTPPacket*>   _packetQueue;
+  QMutex              _packetQueueMutex;
 
   IAudioAPI           *_audioAPI;
   IEncoder            *_encoder;
