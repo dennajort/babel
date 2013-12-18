@@ -4,21 +4,22 @@ project(CamelBabelServer)
 
 file(
   GLOB_RECURSE
-  SERVER_SOURCES
+  SOURCES
   src/*.cpp
   )
 
 file(
   GLOB_RECURSE
-  SERVER_HEADERS
-  include/*.hpp
+  HEADERS
   include/*.hh
   )
 
-add_executable(server ${SERVER_SOURCES} ${SERVER_HEADERS})
+include_directories(include)
 
-FIND_PACKAGE(Boost 1.40.0 COMPONENTS system REQUIRED)
+add_executable(server ${SOURCES} ${HEADERS})
+
+find_package(Boost 1.40.0 COMPONENTS system REQUIRED)
 link_directories(${Boost_LIBRARY_DIRS})
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
-TARGET_LINK_LIBRARIES(server ${Boost_LIBRARIES})
+include_directories(${Boost_INCLUDE_DIR})
+target_link_libraries(server ${Boost_LIBRARIES})
 
