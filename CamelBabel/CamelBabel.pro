@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     ChatWidget.cpp \
     RTPCallManager.cpp \
     ConnectionDialog.cpp \
-    Opus.cpp
+    Opus.cpp \
+    SipHandler.cpp
 
 HEADERS  += MainWindow.hpp \
     SettingsDialog.hpp \
@@ -35,10 +36,13 @@ HEADERS  += MainWindow.hpp \
     IEncoder.hpp \
     Opus.hpp \
     RTPPacket.hpp
+    SipProtocol.hpp \
+    SipHandler.hpp
 
 FORMS    += MainWindow.ui \
     SettingsDialog.ui \
-    ChatWidget.ui
+    ChatWidget.ui \
+    ConnectionDialog.ui
 
 RESOURCES += \
     CamelBabel.qrc

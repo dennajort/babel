@@ -58,7 +58,7 @@
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Advenced</string>
+       <string>Advanced</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
