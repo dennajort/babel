@@ -1,7 +1,7 @@
 #include <boost/lexical_cast.hpp>
 #include "Parser.hh"
 
-Parser::Parser(TcpCLientPtr client)
+Parser::Parser(TcpClient *client)
   : _client(client)
 {
 
@@ -126,7 +126,7 @@ Parser::caseFirstDE()
 void
 Parser::caseConnect()
 {
-  std::string	temp("NNECT\t");
+  std::string	tmp("NNECT\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -142,7 +142,7 @@ void
 Parser::caseConnectUsername()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       return _client->handleParserError();
@@ -161,7 +161,7 @@ void
 Parser::caseConnectPassword()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff2.empty())
@@ -178,7 +178,7 @@ Parser::caseConnectPassword()
 void
 Parser::caseCreateAccount()
 {
-  std::string	temp("EATE_ACCOUNT\t");
+  std::string	tmp("EATE_ACCOUNT\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -194,7 +194,7 @@ void
 Parser::caseCreateAccountUsername()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       return _client->handleParserError();
@@ -213,7 +213,7 @@ void
 Parser::caseCreateAccountPassword()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff2.empty())
@@ -230,7 +230,7 @@ Parser::caseCreateAccountPassword()
 void
 Parser::caseCall()
 {
-  std::string	temp("LL\t");
+  std::string	tmp("LL\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -246,7 +246,7 @@ void
 Parser::caseCallId()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff1.empty())
@@ -263,7 +263,7 @@ Parser::caseCallId()
 void
 Parser::caseSetStatus()
 {
-  std::string	temp("T_STATUS\t");
+  std::string	tmp("T_STATUS\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -279,7 +279,7 @@ void
 Parser::caseSetStatusNewStatus()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff1.empty())
@@ -296,7 +296,7 @@ Parser::caseSetStatusNewStatus()
 void
 Parser::caseSendMessage()
 {
-  std::string	temp("ND_MESSAGE\t");
+  std::string	tmp("ND_MESSAGE\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -312,7 +312,7 @@ void
 Parser::caseSendMessageToId()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\t':
       if (_buff1.empty())
@@ -331,7 +331,7 @@ void
 Parser::caseSendMessageMessage()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff2.empty())
@@ -348,7 +348,7 @@ Parser::caseSendMessageMessage()
 void
 Parser::caseListContacts()
 {
-  std::string	temp("IST_CONTACTS\n");
+  std::string	tmp("IST_CONTACTS\n");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -356,13 +356,13 @@ Parser::caseListContacts()
       if (*i != *_i)
         return _client->handleParserError();
     }
-  return handleParserListContacts();
+  return _client->handleParserListContacts();
 }
  
 void
 Parser::caseAddContact()
 {
-  std::string	temp("D_CONTACT\t");
+  std::string	tmp("D_CONTACT\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -378,7 +378,7 @@ void
 Parser::caseAddContactUsername()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff1.empty())
@@ -395,7 +395,7 @@ Parser::caseAddContactUsername()
 void
 Parser::caseDeleteContact()
 {
-  std::string	temp("LETE_CONTACT\t");
+  std::string	tmp("LETE_CONTACT\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -411,7 +411,7 @@ void
 Parser::caseDeleteContactId()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff1.empty())
@@ -428,7 +428,7 @@ Parser::caseDeleteContactId()
 void
 Parser::caseDeclineCall()
 {
-  std::string	temp("CLINE_CALL\t");
+  std::string	tmp("CLINE_CALL\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -444,7 +444,7 @@ void
 Parser::caseDeclineCallId()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff1.empty())
@@ -461,7 +461,7 @@ Parser::caseDeclineCallId()
 void
 Parser::caseAcceptCall()
 {
-  std::string	temp("CEPT_CALL\t");
+  std::string	tmp("CEPT_CALL\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -477,7 +477,7 @@ void
 Parser::caseAcceptCallId()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff1.empty())
@@ -494,7 +494,7 @@ Parser::caseAcceptCallId()
 void
 Parser::caseGetMessages()
 {
-  std::string	temp("ET_MESSAGES\t");
+  std::string	tmp("ET_MESSAGES\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -510,7 +510,7 @@ void
 Parser::caseGetMessagesId()
 {
   _i++;
-  switch (*->_i)
+  switch (*_i)
     {
     case '\n':
       if (_buff1.empty())

@@ -2,11 +2,12 @@
 #define	__PARSER_HH__
 
 #include <string>
+#include "TcpClient.hh"
 
 class	Parser
 {
 public:
-  Parser(TcpClientPtr);
+  Parser(TcpClient *);
   ~Parser();
 
   void	parse(const std::string &);
@@ -33,6 +34,7 @@ private:
   void	caseSetStatusNewStatus();
   void	caseSendMessage();
   void	caseSendMessageToId();
+  void	caseSendMessageMessage();
 
   void	caseListContacts();
 
@@ -43,15 +45,17 @@ private:
   void	caseAcceptCallId();
 
   void	caseDeleteContact();
+  void	caseDeleteContactId();
 
   void	caseDeclineCall();
   void	caseDeclineCallId();
 
   void	caseGetMessages();
+  void	caseGetMessagesId();
 
   std::string			_line;
   std::string::const_iterator	_i;
-  TcpClientPtr			_client;
+  TcpClient			*_client;
   std::string			_buff2;
   std::string			_buff1;
 };
