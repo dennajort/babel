@@ -12,11 +12,11 @@ RTPCallManager::RTPCallManager(QObject *parent) :
   _contact(QHostAddress::Any),
   _contactPort(4242)
 {
-  _audioAPI = createPortAudio(24000, 240,
+  _audioAPI = createPortAudio(24000, 960,
                               std::bind(&RTPCallManager::handleAudio, this,
                                         std::placeholders::_1, std::placeholders::_2,
                                         std::placeholders::_3, std::placeholders::_4));
-  _encoder = new Opus(24000, 240);
+  _encoder = new Opus(24000, 960);
   initSocket();
   QSettings settings;
   settings.beginGroup("account");
@@ -138,11 +138,17 @@ void RTPCallManager::handleAudio(const float *input, float *output,
   _packetQueueMutex.lock();
   if (!_packetQueue.isEmpty())
     {
-      qDebug() << "packetQueue size = " << _packetQueue.size();
+      while (_packetQueue.size() > 10)
+        {
+          delete _packetQueue.front();
+          _packetQueue.pop_front();
+        }
       RTPPacket *packet = _packetQueue.front();
       _packetQueue.pop_front();
       _encoder->decode(packet->getPayload(), packet->getPayloadSize(), output);
       delete packet;
     }
+  else
+    _encoder->decode(NULL, 0, output);
   _packetQueueMutex.unlock();
 }
