@@ -31,7 +31,8 @@ private:
   void	caseCallId();
 
   void	caseSetStatus();
-  void	caseSetStatusNewStatus();
+  void	caseSetStatusNewStatusId();
+  void	caseSetStatusNewStatusMood();
   void	caseSendMessage();
   void	caseSendMessageToId();
   void	caseSendMessageMessage();

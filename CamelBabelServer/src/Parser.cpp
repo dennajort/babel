@@ -272,24 +272,43 @@ Parser::caseSetStatus()
         return _client->handleParserError();
     }
   _buff1 = "";
-  return caseSetStatusNewStatus();
+  return caseSetStatusNewStatusId();
 }
 
 void
-Parser::caseSetStatusNewStatus()
+Parser::caseSetStatusNewStatusId()
+{
+  _i++;
+  switch (*_i)
+    {
+    case '\t':
+      if (_buff1.empty())
+        return _client->handleParserError();
+      _buff2 = "";
+      return caseSetStatusNewStatusMood();
+    case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+      _buff1 += *_i;
+      return caseSetStatusNewStatusId();
+    default:
+      return _client->handleParserError();
+    }
+}
+
+void
+Parser::caseSetStatusNewStatusMood()
 {
   _i++;
   switch (*_i)
     {
     case '\n':
-      if (_buff1.empty())
+      if (_buff2.empty())
         return _client->handleParserError();
-      return _client->handleParserSetStatus(_buff1);
+      return _client->handleParserSetStatus(boost::lexical_cast<unsigned int>(_buff1), _buff2);
     case '\t':
       return _client->handleParserError();
     default:
-      _buff1 += *_i;
-      return caseSetStatusNewStatus();
+      _buff2 += *_i;
+      return caseSetStatusNewStatusMood();
     }
 }
 
