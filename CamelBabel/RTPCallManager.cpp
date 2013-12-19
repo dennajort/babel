@@ -10,7 +10,8 @@
 RTPCallManager::RTPCallManager(QObject *parent) :
   QObject(parent),
   _contact(QHostAddress::Any),
-  _contactPort(4242)
+  _contactPort(4242),
+  _packetSequence(0)
 {
   _audioAPI = createPortAudio(24000, 960,
                               std::bind(&RTPCallManager::handleAudio, this,
@@ -28,9 +29,13 @@ RTPCallManager::RTPCallManager(QObject *parent) :
 RTPCallManager::~RTPCallManager()
 {
   delete _audioAPI;
-//  _packetQueueMutex.lock();
-//  while (_packetQueue)
-//  _packetQueueMutex.unlock();
+  _packetQueueMutex.lock();
+  while (!_packetQueue.empty())
+    {
+      delete _packetQueue.top();
+      _packetQueue.pop();
+    }
+  _packetQueueMutex.unlock();
 }
 
 void RTPCallManager::sendDatagram(const QByteArray &datagram)
@@ -41,6 +46,7 @@ void RTPCallManager::sendDatagram(const QByteArray &datagram)
 
 void RTPCallManager::call()
 {
+  _packetSequence = 0;
   _audioAPI->start();
 }
 
@@ -80,12 +86,11 @@ void RTPCallManager::processRTPDatagram(QByteArray *datagram)
   t_rtp         *rtp = reinterpret_cast<t_rtp*>(datagram->data());
   size_t        rtpHeaderLength;
 
-  qDebug() << "-- Start Processing datagram";
-  qDebug() << "size: " << datagram->size() << " >= " << sizeof(rtp)
-           << "rtp_ver = " << rtp->rtp_ver
-           << "rtp_cc = " << rtp->rtp_cc
-           << "rtp_ts = " << qFromBigEndian(rtp->rtp_ts)
-           << "rtp_type = " << rtp->rtp_type;
+//  qDebug() << "size: " << datagram->size() << " >= " << sizeof(rtp)
+//           << "rtp_ver = " << rtp->rtp_ver
+//           << "rtp_cc = " << rtp->rtp_cc
+//           << "rtp_ts = " << qFromBigEndian(rtp->rtp_ts)
+//           << "rtp_type = " << rtp->rtp_type;
   if (static_cast<size_t>(datagram->size()) < sizeof(*rtp)
       || rtp->rtp_ver != 2
       || rtp->rtp_cc > 15
@@ -103,9 +108,8 @@ void RTPCallManager::processRTPDatagram(QByteArray *datagram)
     }
   if (rtp->rtp_pad)
     datagram->truncate(datagram->data()[datagram->size() - 1]);
-  qDebug() << "-- End Processing datagram";
   _packetQueueMutex.lock();
-  _packetQueue.push_back(new RTPPacket(datagram, rtpHeaderLength));
+  _packetQueue.push(new RTPPacket(datagram, rtpHeaderLength));
   _packetQueueMutex.unlock();
 }
 
@@ -119,7 +123,7 @@ void RTPCallManager::createRTPFromAudio()
   rtp.rtp_cc = 0;
   rtp.rtp_marker = 0;
   rtp.rtp_type = 0;
-  rtp.rtp_seq = qToBigEndian<quint16>(1);
+  rtp.rtp_seq = qToBigEndian(_packetSequence++);
   rtp.rtp_ts = qToBigEndian<quint32>(1);
   rtp.rtp_ssrc = qToBigEndian<quint32>(42);
   QByteArray    packet(reinterpret_cast<const char *>(&rtp), RTP_LENGTH);
@@ -136,16 +140,15 @@ void RTPCallManager::handleAudio(const float *input, float *output,
   _encoder->encode(input);
   createRTPFromAudio();
   _packetQueueMutex.lock();
-  if (!_packetQueue.isEmpty())
+  if (_packetQueue.size() >= 4)
     {
-      while (_packetQueue.size() > 10)
-	{
-	  delete _packetQueue.front();
-	  _packetQueue.pop_front();
-	}
-      qDebug() << "packetQueue size = " << _packetQueue.size();
-      RTPPacket *packet = _packetQueue.front();
-      _packetQueue.pop_front();
+      while (_packetQueue.size() > 14)
+        {
+          delete _packetQueue.top();
+          _packetQueue.pop();
+        }
+      RTPPacket *packet = _packetQueue.top();
+      _packetQueue.pop();
       _encoder->decode(packet->getPayload(), packet->getPayloadSize(), output);
       delete packet;
     }

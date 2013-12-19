@@ -3,11 +3,13 @@
 
 #include <QObject>
 #include <QUdpSocket>
-#include <QList>
 #include <QMutex>
+#include <queue>
 #include "RTPPacket.hpp"
 #include "IAudioAPI.hpp"
 #include "IEncoder.hpp"
+
+typedef std::priority_queue<RTPPacket*> RTPPacketQueue;
 
 class RTPCallManager : public QObject
 {
@@ -38,7 +40,9 @@ private:
   QHostAddress        _contact;
   quint16             _contactPort;
 
-  QList<RTPPacket*>   _packetQueue;
+  quint16             _packetSequence;
+
+  RTPPacketQueue      _packetQueue;
   QMutex              _packetQueueMutex;
 
   IAudioAPI           *_audioAPI;

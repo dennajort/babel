@@ -23,7 +23,9 @@ public:
 
   const unsigned char *getPayload() const {return (_payload);}
   int getPayloadSize() const {return (_payloadSize);}
-  quint16 getSequence() const {return (qFromBigEndian(_rtp->rtp_ts));}
+  quint16 getSequence() const {return (qFromBigEndian(_rtp->rtp_seq));}
+
+  bool operator<(const RTPPacket &p) const {return (qFromBigEndian(_rtp->rtp_seq) < qFromBigEndian(p._rtp->rtp_seq));}
 
 private:
   QByteArray      *_datagram;
@@ -31,5 +33,6 @@ private:
   unsigned char   *_payload;
   int             _payloadSize;
 };
+
 
 #endif // RTPPACKET_HPP
