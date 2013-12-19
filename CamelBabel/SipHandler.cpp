@@ -3,9 +3,10 @@
 #include "SipProtocol.hpp"
 #include "SipHandler.hpp"
 
-SipHandler::SipHandler(QMainWindow *window)
+SipHandler::SipHandler(QWidget *window)
   : _state(NONE)
 {
+  qDebug() << "SipHandler";
   _socket = new QTcpSocket(this);
   connect(_socket, SIGNAL(readyRead()),
 	  this, SLOT(readData()));
@@ -55,6 +56,7 @@ void SipHandler::connectMe()
   _socket->abort();
   _socket->connectToHost(settings.value("account/server").toString(),
 			 settings.value("account/port").toInt());
+  qDebug() << "connect";
 }
 
 void SipHandler::readData()
@@ -176,6 +178,7 @@ void SipHandler::getHelloInfos(const QStringList &stringList)
 {
   _id = stringList[1];
   _hash = stringList[2];
+  qDebug() << "Hello";
 }
 
 void SipHandler::handleError(const QStringList &stringList)

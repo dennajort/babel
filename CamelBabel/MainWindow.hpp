@@ -6,6 +6,7 @@
 #include <QMenu>
 #include <QListWidget>
 #include <QCloseEvent>
+#include "SipHandler.hpp"
 #include "RTPCallManager.hpp"
 
 namespace Ui {
@@ -15,7 +16,7 @@ namespace Ui {
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
-  
+
 public:
   explicit      MainWindow(QWidget *parent = 0);
   virtual       ~MainWindow();
@@ -47,7 +48,7 @@ private:
   void		createTrayIcon();
   void		writeSettings();
   void		readSettings();
-  
+
   Ui::MainWindow          *_ui;
 
   QIcon                   _availableImg;
@@ -62,6 +63,7 @@ private:
   bool                    _inCall;
 
   RTPCallManager          *_rtpCallManager;
+  SipHandler		*_sipHandler;
 };
 
 #endif // MAINWINDOW_HPP

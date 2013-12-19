@@ -13,7 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
   _awayImg(":/images/away.png"),
   _offlineImg(":/images/offline.png"),
   _inCall(false),
-  _rtpCallManager(new RTPCallManager(this))
+  _rtpCallManager(new RTPCallManager(this)),
+  _sipHandler(new SipHandler(this))
 {
   _ui->setupUi(this);
   readSettings();
@@ -23,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+  delete _sipHandler;
   delete _rtpCallManager;
   delete _ui;
 }

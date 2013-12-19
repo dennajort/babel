@@ -1,8 +1,8 @@
 #ifndef SETTINGSDIALOG_HPP
 #define SETTINGSDIALOG_HPP
 
-#include <QWidget>
 #include <QDialog>
+#include "SipHandler.hpp"
 
 namespace Ui {
   class SettingsDialog;
@@ -13,14 +13,17 @@ class SettingsDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit            SettingsDialog(QWidget *parent = 0);
-  virtual             ~SettingsDialog();
+  explicit    SettingsDialog(QWidget *parent = 0);
+  virtual     ~SettingsDialog();
+
+signals:
 
 public slots:
-  virtual void        accept();
+  void  cancelButton();
+  void  registerButton();
 
 private:
-  Ui::SettingsDialog        *_ui;
+Ui::SettingsDialog      *_ui;
 };
 
 #endif // SETTINGSDIALOG_HPP

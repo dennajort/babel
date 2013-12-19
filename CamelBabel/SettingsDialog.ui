@@ -2,67 +2,132 @@
 <ui version="4.0">
  <class>SettingsDialog</class>
  <widget class="QDialog" name="SettingsDialog">
-  <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>365</width>
-    <height>205</height>
+    <width>400</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
   </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTabWidget" name="settingsTab">
+    <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="basic">
+     <widget class="QWidget" name="basicTab">
       <attribute name="title">
-       <string>General</string>
+       <string>Basic</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <layout class="QFormLayout" name="formLayout">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
          <property name="fieldGrowthPolicy">
           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="nicknameLabel">
+          <widget class="QLabel" name="usernameLabel">
            <property name="text">
-            <string>Nickname</string>
+            <string>Username</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="nicknameLineEdit"/>
+          <widget class="QLineEdit" name="usernameLineEdit"/>
          </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="commentLabel">
+          <widget class="QLabel" name="passwordLabel">
            <property name="text">
-            <string>Comment</string>
+            <string>Password</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="commentLineEdit"/>
+          <widget class="QLineEdit" name="passwordLineEdit">
+           <property name="echoMode">
+            <enum>QLineEdit::Password</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="formLayout_2">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="saveMyPasswordCheckBox">
+           <property name="text">
+            <string>Save my password</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="registerCheckBox">
+           <property name="text">
+            <string>Create this new account on the server</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="cancelBasicButton">
+           <property name="text">
+            <string>Cancel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="connectButton">
+           <property name="text">
+            <string>Connect</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="advancedTab">
       <attribute name="title">
        <string>Advanced</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <layout class="QFormLayout" name="formLayout_2">
+        <layout class="QFormLayout" name="formLayout_3">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="serverLabel">
            <property name="text">
@@ -83,23 +148,51 @@
          <item row="1" column="1">
           <widget class="QLineEdit" name="portLineEdit"/>
          </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="statusLabel">
+           <property name="text">
+            <string>Status</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="statusLineEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="cancelAdvancedButton">
+           <property name="text">
+            <string>Cancel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="saveButton">
+           <property name="text">
+            <string>Save</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
      </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
-     </property>
-     <property name="centerButtons">
-      <bool>false</bool>
-     </property>
     </widget>
    </item>
   </layout>
@@ -107,36 +200,40 @@
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
+   <sender>cancelAdvancedButton</sender>
+   <signal>clicked()</signal>
    <receiver>SettingsDialog</receiver>
-   <slot>accept()</slot>
+   <slot>cancelButton()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>108</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
+     <x>199</x>
+     <y>149</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
+   <sender>cancelBasicButton</sender>
+   <signal>clicked()</signal>
    <receiver>SettingsDialog</receiver>
-   <slot>reject()</slot>
+   <slot>cancelButton()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>108</x>
+     <y>265</y>
     </hint>
     <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
+     <x>199</x>
+     <y>149</y>
     </hint>
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>registerButton()</slot>
+  <slot>cancelButton()</slot>
+ </slots>
 </ui>

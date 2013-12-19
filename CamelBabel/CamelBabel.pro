@@ -17,19 +17,16 @@ QMAKE_CXXFLAGS += -std=c++0x
 
 SOURCES += main.cpp\
         MainWindow.cpp \
-    SettingsDialog.cpp \
     ChatWidget.cpp \
     RTPCallManager.cpp \
-    ConnectionDialog.cpp \
     Opus.cpp \
-    SipHandler.cpp
+    SipHandler.cpp \
+    SettingsDialog.cpp
 
 HEADERS  += MainWindow.hpp \
-    SettingsDialog.hpp \
     ChatWidget.hpp \
     RTPCallManager.hpp \
     rtp.hpp \
-    ConnectionDialog.hpp \
     BabelException.hpp \
     PortAudio.hpp \
     IAudioAPI.hpp \
@@ -37,12 +34,12 @@ HEADERS  += MainWindow.hpp \
     Opus.hpp \
     RTPPacket.hpp \
     SipProtocol.hpp \
-    SipHandler.hpp
+    SipHandler.hpp \
+    SettingsDialog.hpp
 
 FORMS    += MainWindow.ui \
-    SettingsDialog.ui \
     ChatWidget.ui \
-    ConnectionDialog.ui
+    SettingsDialog.ui
 
 RESOURCES += \
     CamelBabel.qrc

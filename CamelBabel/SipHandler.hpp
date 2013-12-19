@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
-#include <QMainWindow>
+#include <QWidget>
 
 enum                e_state
   {
@@ -16,7 +16,7 @@ class	SipHandler : public QObject
 {
   Q_OBJECT
 public:
-  SipHandler(QMainWindow *window);
+  SipHandler(QWidget *window);
   ~SipHandler();
 public slots:
   void		connectMe();

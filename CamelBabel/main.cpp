@@ -19,6 +19,6 @@ int main(int argc, char *argv[])
       return (EXIT_FAILURE);
     }
   MainWindow w;
-  w.show();  
+  w.show();
   return a.exec();
 }
