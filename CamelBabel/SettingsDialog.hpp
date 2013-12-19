@@ -20,7 +20,7 @@ signals:
 
 public slots:
   void  cancelButton();
-  void  registerButton();
+  void  saveSettings();
 
 private:
 Ui::SettingsDialog      *_ui;

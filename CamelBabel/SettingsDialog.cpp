@@ -24,10 +24,17 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::cancelButton()
 {
-  close();
+  hide();
 }
 
-void SettingsDialog::registerButton()
+void SettingsDialog::saveSettings()
 {
-  qDebug() << "register";
+  QSettings        settings;
+
+  settings.beginGroup("account");
+  settings.setValue("server", _ui->serverLineEdit->text());
+  settings.setValue("port", _ui->portLineEdit->text());
+  settings.setValue("status", _ui->statusLineEdit->text());
+  settings.endGroup();
+  hide();
 }
