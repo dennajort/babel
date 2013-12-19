@@ -104,8 +104,8 @@ void SipHandler::handleCreateAccount(const QString &username, const QString &pas
 {
   QCryptographicHash        sha1(QCryptographicHash::Sha1);
 
-  qDebug() << username;
-  qDebug() << password;
+  qDebug() << "username" << username;
+  qDebug() << "password" << password;
   sha1.addData(password.toLatin1().data());
   tcpSend(QString(SIP_CREATE_ACCOUNT) + '\t' + username + '\t' + sha1.result().toHex());
   _state = CREATE;
@@ -116,10 +116,12 @@ void SipHandler::handleConnectUser(const QString &username, const QString &passw
   QCryptographicHash	sha1(QCryptographicHash::Sha1);
   QByteArray	       	byteArray;
 
+  qDebug() << "username" << username;
+  qDebug() << "password" << password;
   sha1.addData(password.toLatin1().data());
   byteArray = sha1.result();
   sha1.reset();
-  byteArray += password;
+  byteArray += _hash;
   sha1.addData(byteArray);
   tcpSend(QString(SIP_CONNECT) + '\t' + username + '\t' + sha1.result().toHex());
   _state = CONNECT;
@@ -183,9 +185,9 @@ void SipHandler::getHelloInfos(const QStringList &stringList)
   _id = stringList[1];
   _hash = stringList[2];
   if (settings.value("account/register", false).toBool())
-      handleCreateAccount(settings.value("username", "").toString(), settings.value("password", "").toString());
+      handleCreateAccount(settings.value("account/username", "").toString(), settings.value("account/password", "").toString());
   else
-      handleConnectUser(settings.value("username", "").toString(), settings.value("password", "").toString());
+      handleConnectUser(settings.value("account/username", "").toString(), settings.value("account/password", "").toString());
 }
 
 void SipHandler::handleError(const QStringList &stringList)
@@ -210,7 +212,7 @@ void SipHandler::handleCreateResponse(const QStringList &stringList)
   else
     {
       QSettings settings;
-      handleConnectUser(settings.value("username", "").toString(), settings.value("password", "").toString());
+      handleConnectUser(settings.value("account/username", "").toString(), settings.value("account/password", "").toString());
       _state = NONE;
       settings.setValue("account/register", false);
     }
