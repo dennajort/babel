@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QInputDialog>
+#include <QDebug>
 #include "MainWindow.hpp"
 #include "ui_MainWindow.h"
 #include "SettingsDialog.hpp"
@@ -107,6 +108,11 @@ void MainWindow::callFinished()
   emit changeCallButton(true);
 }
 
+void MainWindow::clientConnected(const bool res)
+{
+  qDebug() << "client connected" << res;
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
   if (_trayIcon->isVisible())
@@ -134,6 +140,11 @@ void MainWindow::addChat(const QString &contact)
           chat, SLOT(setCallButton(bool)));
   _ui->contactList->addItem(item);
   _ui->chatStack->addWidget(chat);
+}
+
+void  MainWindow::connectRegister()
+{
+  _sipHandler->connectMe();
 }
 
 bool MainWindow::contactAlreadyAdded(const QString &contact) const

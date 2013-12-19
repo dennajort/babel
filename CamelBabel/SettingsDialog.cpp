@@ -11,6 +11,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
   _ui->setupUi(this);
   settings.beginGroup("account");
+  _ui->usernameLineEdit->setText(settings.value("username", "").toString());
+  _ui->passwordLineEdit->setText(settings.value("password", "").toString());
   _ui->serverLineEdit->setText(settings.value("server", "127.0.0.1").toString());
   _ui->portLineEdit->setText(settings.value("port", "4242").toString());
   _ui->statusLineEdit->setText(settings.value("status", "school").toString());
@@ -37,4 +39,18 @@ void SettingsDialog::saveSettings()
   settings.setValue("status", _ui->statusLineEdit->text());
   settings.endGroup();
   hide();
+}
+
+void SettingsDialog::saveBasic()
+{
+  QSettings settings;
+
+  settings.beginGroup("account");
+  settings.setValue("username", _ui->usernameLineEdit->text());
+  settings.setValue("register", _ui->registerCheckBox->isChecked());
+  if (_ui->saveMyPasswordCheckBox->isChecked())
+      settings.setValue("password", _ui->passwordLineEdit->text());
+  settings.endGroup();
+  if (_ui->usernameLineEdit->text() != "" && _ui->passwordLineEdit->text() != "")
+    hide();
 }

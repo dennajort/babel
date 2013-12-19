@@ -267,6 +267,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionConnect</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>connectRegister()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>197</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>about()</slot>
@@ -275,5 +291,6 @@
   <slot>addContact()</slot>
   <slot>deleteContact()</slot>
   <slot>contactSelected()</slot>
+  <slot>connectRegister()</slot>
  </slots>
 </ui>

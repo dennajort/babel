@@ -9,7 +9,8 @@ enum                e_state
   {
     NONE = 0,
     CREATE = 1,
-    ADD_CONTACT = 2
+    CONNECT = 2,
+    ADD_CONTACT = 3
   };
 
 class	SipHandler : public QObject
@@ -18,13 +19,13 @@ class	SipHandler : public QObject
 public:
   SipHandler(QWidget *window);
   ~SipHandler();
-public slots:
   void		connectMe();
+public slots:
 private slots:
   void		readData();
   void		socketError(QAbstractSocket::SocketError socketError);
-  void		handleCreateAccount(const QString &username, const QString &password);
-  void		handleConnectUser(const QString &username, const QString &password);
+  void          handleCreateAccount(const QString &username, const QString &password);
+  void          handleConnectUser(const QString &username, const QString &password);
   void		handleSetStatus(const QString &status);
   void		handleListContacts();
   void		handleAddContact(const QString &contact);
@@ -35,7 +36,8 @@ private slots:
 signals:
   void		error(const QString error);
   void		displayMessage(const QString &message);
-  void		createResult(const bool result);
+  void		registerError();
+  void          clientConnected(const bool res);
   void		contact(const unsigned int id, const QString &username, const QString &status);
   void		contactIp(const unsigned int id, const QString &ip);
   void		addContactResult(const bool result);
@@ -47,6 +49,7 @@ private:
   void		handleContact(const QStringList &stringList);
   void		handleContactIp(const QStringList &stringList);
   void		handleCreateResponse(const QStringList &stringList);
+  void          handleConnectResponse(const QStringList &stringList);
   void		handleAddContactResponse(const QStringList &stringList);
   void		handleMessage(const QStringList &stringList);
 
