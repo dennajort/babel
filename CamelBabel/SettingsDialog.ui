@@ -108,9 +108,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="connectButton">
+          <widget class="QPushButton" name="saveBasicButton">
            <property name="text">
-            <string>Connect</string>
+            <string>Save</string>
            </property>
           </widget>
          </item>
@@ -183,7 +183,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="saveButton">
+          <widget class="QPushButton" name="saveAdvancedButton">
            <property name="text">
             <string>Save</string>
            </property>
@@ -232,10 +232,26 @@
    </hints>
   </connection>
   <connection>
-   <sender>saveButton</sender>
+   <sender>saveAdvancedButton</sender>
    <signal>clicked()</signal>
    <receiver>SettingsDialog</receiver>
    <slot>saveSettings()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>290</x>
+     <y>265</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveBasicButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>saveBasic()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>290</x>
@@ -252,5 +268,6 @@
   <slot>registerButton()</slot>
   <slot>cancelButton()</slot>
   <slot>saveSettings()</slot>
+  <slot>saveBasic()</slot>
  </slots>
 </ui>

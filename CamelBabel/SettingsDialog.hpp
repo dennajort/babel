@@ -17,10 +17,10 @@ public:
   virtual     ~SettingsDialog();
 
 signals:
-
 public slots:
   void  cancelButton();
   void  saveSettings();
+  void  saveBasic();
 
 private:
 Ui::SettingsDialog      *_ui;
