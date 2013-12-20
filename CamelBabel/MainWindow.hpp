@@ -32,7 +32,6 @@ public slots:
   void          contactSelected();
   void          callStarted();
   void          callFinished();
-  void          connectRegister();
   void          clientConnected(const bool res);
   void          disconnected();
   void		contact(const unsigned int id, const QString &username,

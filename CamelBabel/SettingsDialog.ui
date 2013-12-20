@@ -263,7 +263,7 @@
    <sender>saveBasicButton</sender>
    <signal>clicked()</signal>
    <receiver>SettingsDialog</receiver>
-   <slot>saveBasic()</slot>
+   <slot>saveSettings()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>290</x>
@@ -280,6 +280,5 @@
   <slot>registerButton()</slot>
   <slot>cancelButton()</slot>
   <slot>saveSettings()</slot>
-  <slot>saveBasic()</slot>
  </slots>
 </ui>

@@ -137,7 +137,16 @@ void MainWindow::addContactResult(bool res)
 
 void MainWindow::changeStatus(int index)
 {
-  Q_UNUSED(index);
+  qDebug() << "changeStatus";
+  if (index < 3)
+    {
+      qDebug() << "index < 3";
+      _sipHandler->connectMe();
+
+    }
+//  else
+//    _sipHandler->disconnectMe();
+
 //  if (_socket->state() != QTcpSocket::ConnectedState && (!index || index == 1 || index == 3))
 //    connectMe();
 //  else if (!index)
@@ -204,11 +213,6 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
       else
         item->setIcon(_awayImg);
     }
-}
-
-void  MainWindow::connectRegister()
-{
-  _sipHandler->connectMe();
 }
 
 bool MainWindow::contactAlreadyAdded(const QString &contact) const
