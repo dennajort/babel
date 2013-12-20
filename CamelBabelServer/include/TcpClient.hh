@@ -22,7 +22,7 @@ public:
   void	handleParserConnect(const std::string &, const std::string &) {}
   void	handleParserCreateAccount(const std::string &, const std::string &) {}
   void	handleParserCallId(unsigned int) {}
-  void	handleParserSetStatus(const std::string &) {}
+  void	handleParserSetStatus(unsigned int, const std::string &) {}
   void	handleParserSendMessage(unsigned int, const std::string &) {}
   void	handleParserListContacts() {}
   void	handleParserAddContact(const std::string &) {}
