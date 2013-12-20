@@ -70,8 +70,8 @@ void MainWindow::addContact()
 {
   QString	contact = QInputDialog::getText(this, "Add Contact", "Username:");
 
-  //if (!contact.isEmpty() && !contactAlreadyAdded(contact))
-    //addChat(contact);
+  if (!contact.isEmpty() && !contactAlreadyAdded(contact))
+    emit addContact(contact);
 }
 
 void MainWindow::deleteContact()
