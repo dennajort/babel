@@ -37,8 +37,6 @@ public slots:
 
 signals:
   void          changeCallButton(bool);
-  void          createAccount(const QString&, const QString&);
-  void          connectUser(const QString&, const QString&);
 
 protected:
   virtual void	closeEvent(QCloseEvent *event);

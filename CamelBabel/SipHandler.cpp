@@ -16,8 +16,8 @@ SipHandler::SipHandler(QWidget *window)
 	  window, SLOT(disconnected()));
 
 
-  connect(window, SIGNAL(setStatus(const QString&)),
-	  this, SLOT(handleSetStatus(const QString&)));
+  connect(window, SIGNAL(setStatus(const unsigned int, const QString&)),
+          this, SLOT(handleSetStatus(const unsigned int, const QString&)));
   connect(window, SIGNAL(listContacts()),
 	  this, SLOT(handleListContacts()));
   connect(window, SIGNAL(addContact(const QString&)),
@@ -26,6 +26,10 @@ SipHandler::SipHandler(QWidget *window)
 	  this, SLOT(handleDeleteContact(const unsigned int)));
   connect(window, SIGNAL(call(const unsigned int)),
 	  this, SLOT(handleCall(const unsigned int)));
+  connect(window, SIGNAL(acceptCall(const unsigned int)),
+          this, SLOT(handleAcceptCall(const unsigned int)));
+  connect(window, SIGNAL(declineCall(const unsigned int)),
+          this, SLOT(handleDeclineCall(const unsigned int)));
   connect(window, SIGNAL(sendMessage(const unsigned int, const QString&)),
 	  this, SLOT(handleSendMessage(const unsigned int, const QString&)));
   connect(window, SIGNAL(getMessages(const unsigned int)),
@@ -35,8 +39,10 @@ SipHandler::SipHandler(QWidget *window)
   //connect(this, SIGNAL(displayMessage(const QString&)), window, SLOT());
   //connect(this, SIGNAL(registerError()), window, SLOT());
   connect(this, SIGNAL(clientConnected(const bool)), window, SLOT(clientConnected(const bool)));
-  //connect(this, SIGNAL(contact(const unsigned int, const QString&, const QString&)), window, SLOT());
+  //connect(this, SIGNAL(contact(const unsigned int, const QString&, const unsigned int, const QString&)), window, SLOT());
+  //connect(this, SIGNAL(callRequest(const unsigned int)), window, SLOT());
   //connect(this, SIGNAL(contactIp(const unsigned int, const QString&)), window, SLOT());
+  //connect(this, SIGNAL(declinedCall(const unsigned int)), window, SLOT());
   //connect(this, SIGNAL(addContactResult(bool)), window, SLOT());
   //connect(this, SIGNAL(message(const unsigned int, const QString&, const QString&)), window, SLOT());
 }
@@ -68,24 +74,28 @@ void SipHandler::readData()
           QStringList        stringList = line.split('\t');
           if (!stringList.isEmpty())
             {
-	      if (stringList[0] == SIP_HELLO)
+              if (stringList.size() == 3 && stringList[0] == SIP_HELLO)
 		getHelloInfos(stringList);
-	      else if (stringList[0] == SIP_CONTACT)
+	      else if (stringList.size() == 5 && stringList[0] == SIP_CONTACT)
 		handleContact(stringList);
-	      else if (stringList[0] == SIP_CONTACT_IP)
+	      else if (stringList.size() == 2 && stringList[0] == SIP_CALL_REQUEST)
+		handleCallRequest(stringList);
+	      else if (stringList.size() == 3 && stringList[0] == SIP_CONTACT_IP)
 		handleContactIp(stringList);
-	      else if (stringList[0] == SIP_MESSAGE)
+	      else if (stringList.size() == 2 && stringList[0] == SIP_DECLINED)
+		handleDeclinedCall(stringList);
+	      else if (stringList.size() == 4 && stringList[0] == SIP_MESSAGE)
 		handleMessage(stringList);
-	      else if (_state == CREATE && stringList[0] == SIP_RESP &&
+	      else if (_state == CREATE && stringList.size() == 3 && stringList[0] == SIP_RESP &&
 		       (stringList[1] == SIP_SUCCESS || stringList[1] == SIP_UNAUTHORIZED))
 		handleCreateResponse(stringList);
-	      else if (_state == CONNECT && stringList[0] == SIP_RESP &&
+	      else if (_state == CONNECT && stringList.size() == 3 && stringList[0] == SIP_RESP &&
 			 (stringList[1] == SIP_SUCCESS || stringList[1] == SIP_UNAUTHORIZED))
 		handleConnectResponse(stringList);
-	      else if (_state == ADD_CONTACT && stringList[0] == SIP_RESP &&
+	      else if (_state == ADD_CONTACT && stringList.size() == 3 && stringList[0] == SIP_RESP &&
 		       (stringList[1] == SIP_SUCCESS || stringList[1] == SIP_UNAUTHORIZED))
 		handleAddContactResponse(stringList);
-	      else if (stringList[0] == SIP_RESP && (stringList[1] == SIP_UNAUTHORIZED ||
+	      else if (stringList.size() == 3 && stringList[0] == SIP_RESP && (stringList[1] == SIP_UNAUTHORIZED ||
 						     stringList[1] == SIP_NOTFOUND ||
 						     stringList[1] == SIP_ALREADYCONNECTED))
 		handleError(stringList);
@@ -127,9 +137,9 @@ void SipHandler::handleConnectUser(const QString &username, const QString &passw
   _state = CONNECT;
 }
 
-void SipHandler::handleSetStatus(const QString &status)
+void SipHandler::handleSetStatus(const unsigned int status, const QString &mood)
 {
-  tcpSend(QString(SIP_SET_STATUS) + '\t' + status);
+  tcpSend(QString(SIP_SET_STATUS) + '\t' + status + '\t' + mood);
 }
 
 void SipHandler::handleListContacts()
@@ -155,6 +165,20 @@ void SipHandler::handleCall(const unsigned int id)
   QString contactId = QString::number(id);
 
   tcpSend(QString(SIP_CALL) + '\t' + contactId);
+}
+
+void SipHandler::handleAcceptCall(const unsigned int id)
+{
+  QString contactId = QString::number(id);
+
+  tcpSend(QString(SIP_ACCEPT_CALL) + '\t' + contactId);
+}
+
+void SipHandler::handleDeclineCall(const unsigned int id)
+{
+  QString contactId = QString::number(id);
+
+  tcpSend(QString(SIP_DECLINE_CALL) + '\t' + contactId);
 }
 
 void SipHandler::handleSendMessage(const unsigned int id, const QString &message)
@@ -197,7 +221,12 @@ void SipHandler::handleError(const QStringList &stringList)
 
 void SipHandler::handleContact(const QStringList &stringList)
 {
-  emit contact(stringList[1].toUInt(), stringList[2], stringList[3]);
+  emit contact(stringList[1].toUInt(), stringList[2], stringList[3].toUInt(), stringList[4]);
+}
+
+void SipHandler::handleCallRequest(const QStringList &stringList)
+{
+  emit callRequest(stringList[1].toUInt());
 }
 
 void SipHandler::handleContactIp(const QStringList &stringList)
@@ -205,28 +234,38 @@ void SipHandler::handleContactIp(const QStringList &stringList)
   emit contactIp(stringList[1].toUInt(), stringList[2]);
 }
 
+void SipHandler::handleDeclinedCall(const QStringList &stringList)
+{
+  emit declinedCall(stringList[1].toUInt());
+}
+
 void SipHandler::handleCreateResponse(const QStringList &stringList)
 {
+  _state = NONE;
   if (stringList[1] == SIP_UNAUTHORIZED)
     emit registerError();
   else
     {
       QSettings settings;
       handleConnectUser(settings.value("account/username", "").toString(), settings.value("account/password", "").toString());
-      _state = NONE;
       settings.setValue("account/register", false);
     }
 }
 
 void SipHandler::handleConnectResponse(const QStringList &stringList)
 {
+  qDebug() << "connect responses";
+  QSettings settings;
   if (stringList[1] == SIP_SUCCESS)
-    emit clientConnected(true);
+    {
+      if (!settings.value("account/savePassword", true).toBool())
+        settings.setValue("account/password", "");
+      emit clientConnected(true);
+    }
   else
     {
       emit displayMessage(stringList[2]);
       emit clientConnected(false);
-      //ajouter slots/signaux pour clientConnected, le catcher a main windows dans une methode dédiée
     }
   _state = NONE;
 }
