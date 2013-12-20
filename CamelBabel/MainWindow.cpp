@@ -25,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+  QSettings settings;
+  if (!settings.value("account/savePassword", true).toBool())
+    settings.setValue("account/password", "");
   delete _sipHandler;
   delete _rtpCallManager;
   delete _ui;

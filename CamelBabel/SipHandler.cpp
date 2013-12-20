@@ -114,8 +114,6 @@ void SipHandler::handleCreateAccount(const QString &username, const QString &pas
 {
   QCryptographicHash        sha1(QCryptographicHash::Sha1);
 
-  qDebug() << "username" << username;
-  qDebug() << "password" << password;
   sha1.addData(password.toLatin1().data());
   tcpSend(QString(SIP_CREATE_ACCOUNT) + '\t' + username + '\t' + sha1.result().toHex());
   _state = CREATE;
@@ -126,8 +124,6 @@ void SipHandler::handleConnectUser(const QString &username, const QString &passw
   QCryptographicHash	sha1(QCryptographicHash::Sha1);
   QByteArray	       	byteArray;
 
-  qDebug() << "username" << username;
-  qDebug() << "password" << password;
   sha1.addData(password.toLatin1().data());
   byteArray = sha1.result();
   sha1.reset();
@@ -254,14 +250,8 @@ void SipHandler::handleCreateResponse(const QStringList &stringList)
 
 void SipHandler::handleConnectResponse(const QStringList &stringList)
 {
-  qDebug() << "connect responses";
-  QSettings settings;
   if (stringList[1] == SIP_SUCCESS)
-    {
-      if (!settings.value("account/savePassword", true).toBool())
-        settings.setValue("account/password", "");
       emit clientConnected(true);
-    }
   else
     {
       emit displayMessage(stringList[2]);
