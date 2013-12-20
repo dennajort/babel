@@ -34,6 +34,7 @@ public slots:
   void          callFinished();
   void          connectRegister();
   void          clientConnected(const bool res);
+  void		contact(const unsigned int id, const QString &username, const unsigned int status, const QString &mood);
 
 signals:
   void          changeCallButton(bool);
@@ -42,7 +43,7 @@ protected:
   virtual void	closeEvent(QCloseEvent *event);
 
 private:
-  void          addChat(const QString &contact);
+  void          addChat(const unsigned int id, const QString &contact, const unsigned int status);
   bool          contactAlreadyAdded(const QString &contact) const;
   void          moveListItemToPos(const int fromPos, const int toPos);
   void          moveChatWidgetToPos(const int fromPos, const int toPos);

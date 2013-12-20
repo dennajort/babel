@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QInputDialog>
+#include <QVariant>
 #include <QDebug>
 #include "MainWindow.hpp"
 #include "ui_MainWindow.h"
@@ -69,8 +70,8 @@ void MainWindow::addContact()
 {
   QString	contact = QInputDialog::getText(this, "Add Contact", "Username:");
 
-  if (!contact.isEmpty() && !contactAlreadyAdded(contact))
-    addChat(contact);
+  //if (!contact.isEmpty() && !contactAlreadyAdded(contact))
+    //addChat(contact);
 }
 
 void MainWindow::deleteContact()
@@ -116,6 +117,12 @@ void MainWindow::clientConnected(const bool res)
   qDebug() << "client connected" << res;
 }
 
+void MainWindow::contact(const unsigned int id, const QString &username, const unsigned int status, const QString &mood)
+{
+  (void)mood;
+  addChat(id, username, status);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
   if (_trayIcon->isVisible())
@@ -130,19 +137,46 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
-void MainWindow::addChat(const QString &contact)
+void MainWindow::addChat(const unsigned int id, const QString &contact, const unsigned int status)
 {
-  QListWidgetItem	*item = new QListWidgetItem(_offlineImg, contact);
-  ChatWidget		*chat = new ChatWidget(_me, contact, _inCall, _rtpCallManager, this);
+  (void)status;
+  QListWidgetItem       *item = NULL;
 
-  connect(chat, SIGNAL(callStarted()),
-          this, SLOT(callStarted()));
-  connect(chat, SIGNAL(callFinished()),
-          this, SLOT(callFinished()));
-  connect(this, SIGNAL(changeCallButton(bool)),
-          chat, SLOT(setCallButton(bool)));
-  _ui->contactList->addItem(item);
-  _ui->chatStack->addWidget(chat);
+  for (int i = 1; i < _ui->contactList->count(); ++i)
+    {
+      QListWidgetItem *tmp = _ui->contactList->item(i);
+      if (tmp->data(Qt::UserRole).toUInt() == id)
+        {
+          item = tmp;
+          break;
+        }
+    }
+  if (item == NULL)
+    {
+      item = new QListWidgetItem(_offlineImg, contact);
+      ChatWidget		*chat = new ChatWidget(_me, contact, _inCall, _rtpCallManager, this);
+
+      connect(chat, SIGNAL(callStarted()),
+              this, SLOT(callStarted()));
+      connect(chat, SIGNAL(callFinished()),
+              this, SLOT(callFinished()));
+      connect(this, SIGNAL(changeCallButton(bool)),
+              chat, SLOT(setCallButton(bool)));
+      item->setData(Qt::UserRole, id);
+      _ui->contactList->addItem(item);
+      _ui->chatStack->addWidget(chat);
+    }
+  else
+    {
+      if (status == 0)
+        item->setIcon(_offlineImg);
+      else if (status == 1)
+        item->setIcon(_availableImg);
+      else if (status == 2)
+        item->setIcon(_awayImg); // METTRE BUSY
+      else
+        item->setIcon(_awayImg);
+    }
 }
 
 void  MainWindow::connectRegister()
