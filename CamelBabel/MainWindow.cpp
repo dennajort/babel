@@ -128,6 +128,12 @@ void MainWindow::contact(const unsigned int id, const QString &username, const u
   addChat(id, username, status);
 }
 
+void MainWindow::addContactResult(bool res)
+{
+  if (res == true)
+    emit listContacts();
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
   if (_trayIcon->isVisible())

@@ -44,7 +44,7 @@ SipHandler::SipHandler(QWidget *window)
   //connect(this, SIGNAL(callRequest(const unsigned int)), window, SLOT());
   //connect(this, SIGNAL(contactIp(const unsigned int, const QString&)), window, SLOT());
   //connect(this, SIGNAL(declinedCall(const unsigned int)), window, SLOT());
-  //connect(this, SIGNAL(addContactResult(bool)), window, SLOT());
+  connect(this, SIGNAL(addContactResult(bool)), window, SLOT(addContactResult(bool)));
   //connect(this, SIGNAL(message(const unsigned int, const QString&, const QString&)), window, SLOT());
 }
 
