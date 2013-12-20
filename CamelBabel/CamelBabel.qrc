@@ -1,9 +1,12 @@
-<!DOCTYPE RCC>
 <RCC>
     <qresource prefix="/">
-    <file>images/main_icon.png</file>
-    <file>images/available.png</file>
-    <file>images/away.png</file>
-    <file>images/offline.png</file>
-  </qresource>
+        <file>images/main_icon.png</file>
+        <file>images/available.png</file>
+        <file>images/away.png</file>
+        <file>images/offline.png</file>
+        <file>images/add_contact.png</file>
+        <file>images/setting.png</file>
+        <file>images/quit.png</file>
+        <file>images/about.png</file>
+    </qresource>
 </RCC>

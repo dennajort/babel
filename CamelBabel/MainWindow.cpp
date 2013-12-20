@@ -122,7 +122,8 @@ void MainWindow::disconnected()
   qDebug() << "disconnected";
 }
 
-void MainWindow::contact(const unsigned int id, const QString &username, const unsigned int status, const QString &mood)
+void MainWindow::contact(const unsigned int id, const QString &username,
+			 const unsigned int status, const QString &mood)
 {
   (void)mood;
   addChat(id, username, status);
@@ -132,6 +133,21 @@ void MainWindow::addContactResult(bool res)
 {
   if (res == true)
     emit listContacts();
+}
+
+void MainWindow::changeStatus(int index)
+{
+  Q_UNUSED(index);
+//  if (_socket->state() != QTcpSocket::ConnectedState && (!index || index == 1 || index == 3))
+//    connectMe();
+//  else if (!index)
+//    sendMessage(QString(NS_CMD_USR) + ' ' + NS_STATE + " actif");
+//  else if (index == 1)
+//    sendMessage(QString(NS_CMD_USR) + ' ' + NS_STATE + " away");
+//  else if (index == 2)
+//    sendMessage(QString(NS_CMD_USR) + ' ' + NS_STATE + " away");
+//  else
+//    _socket->abort();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -232,7 +248,11 @@ void MainWindow::moveContactToPos(const QString &contact, const int pos)
 void MainWindow::createTrayIcon()
 {
   _trayIconMenu = new QMenu(this);
+
+  _trayIconMenu->addAction(_ui->actionActiver);
+  _trayIconMenu->addSeparator();
   _trayIconMenu->addAction(_ui->actionSettings);
+  _trayIconMenu->addAction(_ui->actionAbout);
   _trayIconMenu->addSeparator();
   _trayIconMenu->addAction(_ui->actionQuit);
 

@@ -27,14 +27,14 @@ void ChatWidget::callClicked()
       _ui->callButton->setIcon(QIcon::fromTheme("call-stop"));
       _inCall = true;
       emit callStarted();
-      _rtpCallManager->call();
+//      _rtpCallManager->call();
     }
   else
     {
       _ui->callButton->setIcon(QIcon::fromTheme("call-start"));
       emit callFinished();
       _inCall = false;
-      _rtpCallManager->finishCall();
+//      _rtpCallManager->finishCall();
     }
 }
 

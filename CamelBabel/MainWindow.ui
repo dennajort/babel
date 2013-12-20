@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>396</height>
+    <width>463</width>
+    <height>380</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,79 +18,119 @@
     <normaloff>:/images/main_icon.png</normaloff>:/images/main_icon.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QSplitter" name="splitter">
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <property name="opaqueResize">
-       <bool>true</bool>
-      </property>
-      <property name="handleWidth">
-       <number>6</number>
-      </property>
-      <widget class="QListWidget" name="contactList">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="sizeIncrement">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="currentRow">
-        <number>0</number>
-       </property>
-       <property name="sortingEnabled">
-        <bool>false</bool>
-       </property>
-       <item>
-        <property name="text">
-         <string>Recent</string>
-        </property>
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-          <strikeout>false</strikeout>
-         </font>
-        </property>
-        <property name="textAlignment">
-         <set>AlignHCenter|AlignVCenter|AlignCenter</set>
-        </property>
-        <property name="background">
-         <brush brushstyle="NoBrush">
-          <color alpha="255">
-           <red>0</red>
-           <green>0</green>
-           <blue>0</blue>
-          </color>
-         </brush>
-        </property>
-        <property name="flags">
-         <set>ItemIsSelectable|ItemIsEnabled</set>
-        </property>
-       </item>
+      <widget class="QWidget" name="verticalLayoutWidget">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QListWidget" name="contactList">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="sizeIncrement">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="baseSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="currentRow">
+           <number>0</number>
+          </property>
+          <property name="sortingEnabled">
+           <bool>false</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>Recent</string>
+           </property>
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+             <strikeout>false</strikeout>
+            </font>
+           </property>
+           <property name="textAlignment">
+            <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+           </property>
+           <property name="background">
+            <brush brushstyle="NoBrush">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </property>
+           <property name="flags">
+            <set>ItemIsSelectable|ItemIsEnabled</set>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="statusCombo">
+          <property name="currentIndex">
+           <number>3</number>
+          </property>
+          <item>
+           <property name="text">
+            <string>Online</string>
+           </property>
+           <property name="icon">
+            <iconset resource="CamelBabel.qrc">
+             <normaloff>:/images/available.png</normaloff>:/images/available.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Away</string>
+           </property>
+           <property name="icon">
+            <iconset resource="CamelBabel.qrc">
+             <normaloff>:/images/away.png</normaloff>:/images/away.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Do Not Disturb</string>
+           </property>
+           <property name="icon">
+            <iconset resource="CamelBabel.qrc">
+             <normaloff>:/images/away.png</normaloff>:/images/away.png</iconset>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Offline</string>
+           </property>
+           <property name="icon">
+            <iconset resource="CamelBabel.qrc">
+             <normaloff>:/images/offline.png</normaloff>:/images/offline.png</iconset>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QStackedWidget" name="chatStack">
        <property name="sizePolicy">
@@ -116,7 +156,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/images/main_icon.png&quot; width=&quot;100&quot; height=&quot;75&quot; style=&quot;vertical-align: middle;&quot;/&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Welcome To CamelBabel !&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Welcome To CamelBabel !&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -134,10 +174,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionConnect"/>
-   <addaction name="actionSettings"/>
-   <addaction name="separator"/>
    <addaction name="actionAddContact"/>
+   <addaction name="separator"/>
+   <addaction name="actionSettings"/>
    <addaction name="separator"/>
    <addaction name="actionAbout"/>
    <addaction name="actionQuit"/>
@@ -148,6 +187,10 @@
    </property>
   </widget>
   <action name="actionAddContact">
+   <property name="icon">
+    <iconset resource="CamelBabel.qrc">
+     <normaloff>:/images/add_contact.png</normaloff>:/images/add_contact.png</iconset>
+   </property>
    <property name="text">
     <string>Add Contact</string>
    </property>
@@ -156,6 +199,10 @@
    </property>
   </action>
   <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="CamelBabel.qrc">
+     <normaloff>:/images/setting.png</normaloff>:/images/setting.png</iconset>
+   </property>
    <property name="text">
     <string>Settings</string>
    </property>
@@ -163,22 +210,33 @@
     <string>Settings</string>
    </property>
   </action>
-  <action name="actionConnect">
-   <property name="text">
-    <string>Connect</string>
-   </property>
-  </action>
   <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="CamelBabel.qrc">
+     <normaloff>:/images/quit.png</normaloff>:/images/quit.png</iconset>
+   </property>
    <property name="text">
     <string>Quit</string>
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="CamelBabel.qrc">
+     <normaloff>:/images/about.png</normaloff>:/images/about.png</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
    <property name="toolTip">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionActiver">
+   <property name="text">
+    <string>Activer</string>
+   </property>
+   <property name="toolTip">
+    <string>Activer</string>
    </property>
   </action>
  </widget>
@@ -252,6 +310,22 @@
    </hints>
   </connection>
   <connection>
+   <sender>actionActiver</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>changeMainWindowState()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>197</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>contactList</sender>
    <signal>itemSelectionChanged()</signal>
    <receiver>MainWindow</receiver>
@@ -268,18 +342,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionConnect</sender>
-   <signal>triggered()</signal>
+   <sender>statusCombo</sender>
+   <signal>currentIndexChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>connectRegister()</slot>
+   <slot>changeStatus(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
+     <x>89</x>
+     <y>321</y>
     </hint>
     <hint type="destinationlabel">
-     <x>251</x>
-     <y>197</y>
+     <x>223</x>
+     <y>184</y>
     </hint>
    </hints>
   </connection>
@@ -292,5 +366,7 @@
   <slot>deleteContact()</slot>
   <slot>contactSelected()</slot>
   <slot>connectRegister()</slot>
+  <slot>changeMainWindowState()</slot>
+  <slot>changeStatus(int)</slot>
  </slots>
 </ui>

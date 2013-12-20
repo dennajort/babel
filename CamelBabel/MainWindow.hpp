@@ -35,8 +35,10 @@ public slots:
   void          connectRegister();
   void          clientConnected(const bool res);
   void          disconnected();
-  void		contact(const unsigned int id, const QString &username, const unsigned int status, const QString &mood);
+  void		contact(const unsigned int id, const QString &username,
+			const unsigned int status, const QString &mood);
   void          addContactResult(bool res);
+  void          changeStatus(int index);
 
 signals:
   void          setStatus(const unsigned int status, const QString &mood);

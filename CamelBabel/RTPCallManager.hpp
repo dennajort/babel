@@ -18,11 +18,8 @@ public:
   explicit  RTPCallManager(QObject *parent = 0);
   virtual   ~RTPCallManager();
 
-signals:
-
 public slots:
-  void sendDatagram(const QByteArray &datagram);
-  void call();
+  void call(const QString &ip, quint16 port);
   void finishCall();
 
 private slots:
@@ -32,6 +29,7 @@ private:
   void initSocket();
   void processRTPDatagram(QByteArray *datagram);
   void createRTPFromAudio();
+  void sendDatagram(const QByteArray &datagram);
   void handleAudio(const float *input, float *output,
                    unsigned long frameCount, double currentTime);
 

@@ -8,10 +8,7 @@
 #include "rtp.hpp"
 
 RTPCallManager::RTPCallManager(QObject *parent) :
-  QObject(parent),
-  _contact(QHostAddress::Any),
-  _contactPort(4242),
-  _packetSequence(0)
+  QObject(parent)
 {
   _audioAPI = createPortAudio(24000, 960,
                               std::bind(&RTPCallManager::handleAudio, this,
@@ -19,11 +16,6 @@ RTPCallManager::RTPCallManager(QObject *parent) :
                                         std::placeholders::_3, std::placeholders::_4));
   _encoder = new Opus(24000, 960);
   initSocket();
-  QSettings settings;
-  settings.beginGroup("account");
-  _contact = settings.value("server", "127.0.0.1").toString();
-  _contactPort = settings.value("port", "4242").toString().toUInt();
-  settings.endGroup();
 }
 
 RTPCallManager::~RTPCallManager()
@@ -38,14 +30,10 @@ RTPCallManager::~RTPCallManager()
   _packetQueueMutex.unlock();
 }
 
-void RTPCallManager::sendDatagram(const QByteArray &datagram)
+void RTPCallManager::call(const QString &ip, quint16 port)
 {
-  _udpSocket->writeDatagram(datagram.data(), datagram.size(),
-                            _contact, _contactPort);
-}
-
-void RTPCallManager::call()
-{
+  _contact = ip;
+  _contactPort = port;
   _packetSequence = 0;
   _audioAPI->start();
 }
@@ -132,6 +120,13 @@ void RTPCallManager::createRTPFromAudio()
   sendDatagram(packet);
 }
 
+
+void RTPCallManager::sendDatagram(const QByteArray &datagram)
+{
+  _udpSocket->writeDatagram(datagram.data(), datagram.size(),
+                            _contact, _contactPort);
+}
+
 void RTPCallManager::handleAudio(const float *input, float *output,
                                  unsigned long frameCount, double currentTime)
 {
@@ -140,9 +135,9 @@ void RTPCallManager::handleAudio(const float *input, float *output,
   _encoder->encode(input);
   createRTPFromAudio();
   _packetQueueMutex.lock();
-  if (_packetQueue.size() >= 4)
+  if (!_packetQueue.empty())
     {
-      while (_packetQueue.size() > 14)
+      while (_packetQueue.size() > 8)
         {
           delete _packetQueue.top();
           _packetQueue.pop();
