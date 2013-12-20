@@ -117,6 +117,11 @@ void MainWindow::clientConnected(const bool res)
   qDebug() << "client connected" << res;
 }
 
+void MainWindow::disconnected()
+{
+  qDebug() << "disconnected";
+}
+
 void MainWindow::contact(const unsigned int id, const QString &username, const unsigned int status, const QString &mood)
 {
   (void)mood;

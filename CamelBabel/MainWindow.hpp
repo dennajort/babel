@@ -34,10 +34,20 @@ public slots:
   void          callFinished();
   void          connectRegister();
   void          clientConnected(const bool res);
+  void          disconnected();
   void		contact(const unsigned int id, const QString &username, const unsigned int status, const QString &mood);
 
 signals:
+  void          setStatus(const unsigned int status, const QString &mood);
+  void          addContact(const QString &contact);
+  void          deleteContact(const unsigned int id);
+  void          listContacts();
+  void          call(const unsigned int id);
+  void          acceptCall(const unsigned int id);
+  void          declineCall(const unsigned int id);
   void          changeCallButton(bool);
+  void          getMessages(const unsigned int id);
+  void          sendMessage(const unsigned int id, const QString &message);
 
 protected:
   virtual void	closeEvent(QCloseEvent *event);
