@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <QInputDialog>
 #include <QVariant>
+#include <QTimer>
 #include <QDebug>
 #include "MainWindow.hpp"
 #include "ui_MainWindow.h"
@@ -15,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
   _awayImg(":/images/away.png"),
   _doNotDisturbImg(":/image/do_not_disturb.png"),
   _offlineImg(":/images/offline.png"),
+  _trayIcon(new QSystemTrayIcon(this)),
+  _trayIconMenu(new QMenu(this)),
   _inCall(false),
   _rtpCallManager(new RTPCallManager(this)),
   _sipHandler(new SipHandler(this))
@@ -22,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent) :
   _ui->setupUi(this);
   readSettings();
   createTrayIcon();
-  _ui->statusBar->showMessage("Disconnected");
 }
 
 MainWindow::~MainWindow()
@@ -115,24 +117,53 @@ void MainWindow::callFinished()
 
 void MainWindow::clientConnected(const bool res)
 {
-  qDebug() << "client connected" << res;
+  int   currentIndex = _ui->statusCombo->currentIndex();
+
+  qDebug() << "MainWindow::clientConnected";
+  if (res && currentIndex >= 0 && currentIndex < 3)
+    {
+      if (!currentIndex)
+        {
+          _trayIcon->setIcon(_availableImg);
+          _sipHandler->setStatus(0);
+        }
+      else if (currentIndex == 1)
+        {
+          _trayIcon->setIcon(_awayImg);
+          _sipHandler->setStatus(2);
+        }
+      else
+        {
+          _trayIcon->setIcon(_doNotDisturbImg);
+          _sipHandler->setStatus(1);
+        }
+    }
+  else
+    _ui->statusCombo->setCurrentIndex(3);
 }
 
 void MainWindow::disconnected()
 {
-  qDebug() << "disconnected";
+  qDebug() << "MainWindow::disconnected";
+  if (_ui->statusCombo->currentIndex() != 3)
+    {
+      _ui->statusCombo->setCurrentIndex(3);
+      _trayIcon->showMessage("Disconnected", "You've been disconnected !",
+                            QSystemTrayIcon::MessageIcon(2), 4000);
+      QTimer::singleShot(10000, _sipHandler, SLOT(connectMe()));
+    }
 }
 
 void MainWindow::contact(const unsigned int id, const QString &username,
 			 const unsigned int status, const QString &mood)
 {
-  (void)mood;
+  Q_UNUSED(mood);
   addChat(id, username, status);
 }
 
 void MainWindow::addContactResult(bool res)
 {
-  if (res == true)
+  if (res)
     emit listContacts();
 }
 
@@ -141,16 +172,31 @@ void MainWindow::addContactResult(bool res)
 //
 void MainWindow::changeStatus(int index)
 {
-  if (_sipHandler->isConnected() && (!index || index == 1 || index == 2))
+  qDebug() << "MainWindow::changeStatus";
+  if (!_sipHandler->isConnected() && index < 3)
     _sipHandler->connectMe();
   else if (!index)
-    _sipHandler->setStatus(0);
+    {
+      _trayIcon->setIcon(_availableImg);
+      _sipHandler->setStatus(0);
+    }
   else if (index == 1)
-    _sipHandler->setStatus(2);
+    {
+      _trayIcon->setIcon(_awayImg);
+      _sipHandler->setStatus(2);
+    }
   else if (index == 2)
-    _sipHandler->setStatus(1);
+    {
+      _trayIcon->setIcon(_doNotDisturbImg);
+      _sipHandler->setStatus(1);
+    }
   else
-    _sipHandler->disconnectMe();
+    {
+      _trayIcon->setIcon(_offlineImg);
+      _ui->contactList->clear();
+      if (_sipHandler->isConnected())
+        _sipHandler->disconnectMe();
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -245,8 +291,6 @@ void MainWindow::moveContactToPos(const QString &contact, const int pos)
 
 void MainWindow::createTrayIcon()
 {
-  _trayIconMenu = new QMenu(this);
-
   _trayIconMenu->addAction(_ui->actionActiver);
   _trayIconMenu->addSeparator();
   _trayIconMenu->addAction(_ui->actionSettings);
@@ -254,7 +298,6 @@ void MainWindow::createTrayIcon()
   _trayIconMenu->addSeparator();
   _trayIconMenu->addAction(_ui->actionQuit);
 
-  _trayIcon = new QSystemTrayIcon(this);
   _trayIcon->setContextMenu(_trayIconMenu);
   _trayIcon->setToolTip("CamelBabel");
   _trayIcon->setIcon(_offlineImg);

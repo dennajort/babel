@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
-#include <QWidget>
+#include <QString>
 
 enum                e_state
   {
@@ -18,14 +18,14 @@ class	SipHandler : public QObject
   Q_OBJECT
 
 public:
-  SipHandler(QWidget *window = 0);
+  SipHandler(QObject *parent = 0);
   ~SipHandler();
-  void		connectMe();
-  void          disconnectMe();
   bool          isConnected();
   void          setStatus(int status);
 
 public slots:
+  void		connectMe();
+  void          disconnectMe();
 
 private slots:
   void		readData();

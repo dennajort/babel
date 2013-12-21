@@ -181,11 +181,6 @@
    <addaction name="actionAbout"/>
    <addaction name="actionQuit"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar">
-   <property name="statusTip">
-    <string/>
-   </property>
-  </widget>
   <action name="actionAddContact">
    <property name="icon">
     <iconset resource="CamelBabel.qrc">

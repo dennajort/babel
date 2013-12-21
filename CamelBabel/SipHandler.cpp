@@ -1,69 +1,60 @@
 #include <QSettings>
 #include <QCryptographicHash>
+#include <QStringList>
 #include "SipProtocol.hpp"
 #include "SipHandler.hpp"
 
-SipHandler::SipHandler(QWidget *window)
-  : _state(NONE)
+SipHandler::SipHandler(QObject *parent) :
+  QObject(parent),
+  _state(NONE),
+  _socket(new QTcpSocket(this))
 {
-  qDebug() << "SipHandler";
-  _socket = new QTcpSocket(this);
   connect(_socket, SIGNAL(readyRead()),
 	  this, SLOT(readData()));
   connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)),
 	  this, SLOT(socketError(QAbstractSocket::SocketError)));
   connect(_socket, SIGNAL(disconnected()),
-	  window, SLOT(disconnected()));
+          parent, SLOT(disconnected()));
+  connect(this, SIGNAL(error(QString)),
+          parent, SLOT(disconnected()));
 
 
-  connect(window, SIGNAL(setStatus(const unsigned int, const QString&)),
+  connect(parent, SIGNAL(setStatus(const unsigned int, const QString&)),
           this, SLOT(handleSetStatus(const unsigned int, const QString&)));
-  connect(window, SIGNAL(listContacts()),
+  connect(parent, SIGNAL(listContacts()),
 	  this, SLOT(handleListContacts()));
-  connect(window, SIGNAL(addContact(const QString&)),
+  connect(parent, SIGNAL(addContact(const QString&)),
 	  this, SLOT(handleAddContact(const QString&)));
-  connect(window, SIGNAL(deleteContact(const unsigned int)),
+  connect(parent, SIGNAL(deleteContact(const unsigned int)),
 	  this, SLOT(handleDeleteContact(const unsigned int)));
-  connect(window, SIGNAL(call(const unsigned int)),
+  connect(parent, SIGNAL(call(const unsigned int)),
 	  this, SLOT(handleCall(const unsigned int)));
-  connect(window, SIGNAL(acceptCall(const unsigned int)),
+  connect(parent, SIGNAL(acceptCall(const unsigned int)),
           this, SLOT(handleAcceptCall(const unsigned int)));
-  connect(window, SIGNAL(declineCall(const unsigned int)),
+  connect(parent, SIGNAL(declineCall(const unsigned int)),
           this, SLOT(handleDeclineCall(const unsigned int)));
-  connect(window, SIGNAL(sendMessage(const unsigned int, const QString&)),
+  connect(parent, SIGNAL(sendMessage(const unsigned int, const QString&)),
 	  this, SLOT(handleSendMessage(const unsigned int, const QString&)));
-  connect(window, SIGNAL(getMessages(const unsigned int)),
+  connect(parent, SIGNAL(getMessages(const unsigned int)),
 	  this, SLOT(handleGetMessages(const unsigned int)));
 
-  //connect(this, SIGNAL(error(QString)), window, SLOT());
-  //connect(this, SIGNAL(displayMessage(const QString&)), window, SLOT());
-  //connect(this, SIGNAL(registerError()), window, SLOT());
-  connect(this, SIGNAL(clientConnected(const bool)), window, SLOT(clientConnected(const bool)));
+  //connect(this, SIGNAL(displayMessage(const QString&)), parent, SLOT());
+  //connect(this, SIGNAL(registerError()), parent, SLOT());
+  connect(this, SIGNAL(clientConnected(const bool)),
+          parent, SLOT(clientConnected(const bool)));
   connect(this, SIGNAL(contact(const unsigned int, const QString&, const unsigned int, const QString&)),
-          window, SLOT(contact(const unsigned int, const QString&, const unsigned int, const QString&)));
-  //connect(this, SIGNAL(callRequest(const unsigned int)), window, SLOT());
-  //connect(this, SIGNAL(contactIp(const unsigned int, const QString&)), window, SLOT());
-  //connect(this, SIGNAL(declinedCall(const unsigned int)), window, SLOT());
-  connect(this, SIGNAL(addContactResult(bool)), window, SLOT(addContactResult(bool)));
-  //connect(this, SIGNAL(message(const unsigned int, const QString&, const QString&)), window, SLOT());
+          parent, SLOT(contact(const unsigned int, const QString&, const unsigned int, const QString&)));
+  //connect(this, SIGNAL(callRequest(const unsigned int)), parent, SLOT());
+  //connect(this, SIGNAL(contactIp(const unsigned int, const QString&)), parent, SLOT());
+  //connect(this, SIGNAL(declinedCall(const unsigned int)), parent, SLOT());
+  connect(this, SIGNAL(addContactResult(bool)),
+          parent, SLOT(addContactResult(bool)));
+  //connect(this, SIGNAL(message(const unsigned int, const QString&, const QString&)), parent, SLOT());
 }
 
 SipHandler::~SipHandler()
 {
   delete _socket;
-}
-
-void SipHandler::connectMe()
-{
-  QSettings	settings;
-
-  _socket->abort();
-  _socket->connectToHost(settings.value("account/server").toString(),
-                         settings.value("account/port").toInt());
-}
-
-void SipHandler::disconnectMe()
-{
 }
 
 bool SipHandler::isConnected()
@@ -77,6 +68,20 @@ bool SipHandler::isConnected()
 void SipHandler::setStatus(int status)
 {
   tcpSend(QString(SIP_SET_STATUS) + '\t' + status);
+}
+
+void SipHandler::connectMe()
+{
+  QSettings	settings;
+
+  _socket->abort();
+  _socket->connectToHost(settings.value("account/server").toString(),
+                         settings.value("account/port").toInt());
+}
+
+void SipHandler::disconnectMe()
+{
+  _socket->abort();
 }
 
 void SipHandler::readData()
@@ -124,7 +129,7 @@ void SipHandler::readData()
 
 void SipHandler::socketError(QAbstractSocket::SocketError socketError)
 {
-  (void)socketError;
+  Q_UNUSED(socketError);
   emit error(_socket->errorString());
 }
 
@@ -223,9 +228,11 @@ void SipHandler::getHelloInfos(const QStringList &stringList)
   _id = stringList[1];
   _hash = stringList[2];
   if (settings.value("account/register", false).toBool())
-      handleCreateAccount(settings.value("account/username", "").toString(), settings.value("account/password", "").toString());
+      handleCreateAccount(settings.value("account/username", "").toString(),
+                          settings.value("account/password", "").toString());
   else
-      handleConnectUser(settings.value("account/username", "").toString(), settings.value("account/password", "").toString());
+      handleConnectUser(settings.value("account/username", "").toString(),
+                        settings.value("account/password", "").toString());
 }
 
 void SipHandler::handleError(const QStringList &stringList)

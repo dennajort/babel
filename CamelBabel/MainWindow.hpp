@@ -79,7 +79,7 @@ private:
   bool                    _inCall;
 
   RTPCallManager          *_rtpCallManager;
-  SipHandler		*_sipHandler;
+  SipHandler              *_sipHandler;
 };
 
 #endif // MAINWINDOW_HPP
