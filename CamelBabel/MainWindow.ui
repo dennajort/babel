@@ -116,7 +116,7 @@
            </property>
            <property name="icon">
             <iconset resource="CamelBabel.qrc">
-             <normaloff>:/images/away.png</normaloff>:/images/away.png</iconset>
+             <normaloff>:/images/do_not_disturb.png</normaloff>:/images/do_not_disturb.png</iconset>
            </property>
           </item>
           <item>

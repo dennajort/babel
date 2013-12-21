@@ -59,7 +59,24 @@ void SipHandler::connectMe()
 
   _socket->abort();
   _socket->connectToHost(settings.value("account/server").toString(),
-			 settings.value("account/port").toInt());
+                         settings.value("account/port").toInt());
+}
+
+void SipHandler::disconnectMe()
+{
+}
+
+bool SipHandler::isConnected()
+{
+  return (_socket->state() == QTcpSocket::ConnectedState);
+}
+
+//
+// A Verifier
+//
+void SipHandler::setStatus(int status)
+{
+  tcpSend(QString(SIP_SET_STATUS) + '\t' + status);
 }
 
 void SipHandler::readData()

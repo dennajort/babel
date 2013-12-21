@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
   _ui(new Ui::MainWindow),
   _availableImg(":/images/available.png"),
   _awayImg(":/images/away.png"),
+  _doNotDisturbImg(":/image/do_not_disturb.png"),
   _offlineImg(":/images/offline.png"),
   _inCall(false),
   _rtpCallManager(new RTPCallManager(this)),
@@ -135,28 +136,21 @@ void MainWindow::addContactResult(bool res)
     emit listContacts();
 }
 
+//
+// A verifier
+//
 void MainWindow::changeStatus(int index)
 {
-  qDebug() << "changeStatus";
-  if (index < 3)
-    {
-      qDebug() << "index < 3";
-      _sipHandler->connectMe();
-
-    }
-//  else
-//    _sipHandler->disconnectMe();
-
-//  if (_socket->state() != QTcpSocket::ConnectedState && (!index || index == 1 || index == 3))
-//    connectMe();
-//  else if (!index)
-//    sendMessage(QString(NS_CMD_USR) + ' ' + NS_STATE + " actif");
-//  else if (index == 1)
-//    sendMessage(QString(NS_CMD_USR) + ' ' + NS_STATE + " away");
-//  else if (index == 2)
-//    sendMessage(QString(NS_CMD_USR) + ' ' + NS_STATE + " away");
-//  else
-//    _socket->abort();
+  if (_sipHandler->isConnected() && (!index || index == 1 || index == 2))
+    _sipHandler->connectMe();
+  else if (!index)
+    _sipHandler->setStatus(0);
+  else if (index == 1)
+    _sipHandler->setStatus(2);
+  else if (index == 2)
+    _sipHandler->setStatus(1);
+  else
+    _sipHandler->disconnectMe();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -209,7 +203,7 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
       else if (status == 1)
         item->setIcon(_availableImg);
       else if (status == 2)
-        item->setIcon(_awayImg); // METTRE BUSY
+        item->setIcon(_doNotDisturbImg);
       else
         item->setIcon(_awayImg);
     }
@@ -263,7 +257,7 @@ void MainWindow::createTrayIcon()
   _trayIcon = new QSystemTrayIcon(this);
   _trayIcon->setContextMenu(_trayIconMenu);
   _trayIcon->setToolTip("CamelBabel");
-  _trayIcon->setIcon(QIcon(":/images/main_icon.png"));
+  _trayIcon->setIcon(_offlineImg);
   connect(_trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
           this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
   _trayIcon->show();

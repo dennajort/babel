@@ -68,6 +68,7 @@ private:
 
   QIcon                   _availableImg;
   QIcon                   _awayImg;
+  QIcon                   _doNotDisturbImg;
   QIcon                   _offlineImg;
 
   QSystemTrayIcon         *_trayIcon;

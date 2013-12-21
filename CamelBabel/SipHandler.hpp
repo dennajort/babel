@@ -16,11 +16,17 @@ enum                e_state
 class	SipHandler : public QObject
 {
   Q_OBJECT
+
 public:
-  SipHandler(QWidget *window);
+  SipHandler(QWidget *window = 0);
   ~SipHandler();
   void		connectMe();
+  void          disconnectMe();
+  bool          isConnected();
+  void          setStatus(int status);
+
 public slots:
+
 private slots:
   void		readData();
   void		socketError(QAbstractSocket::SocketError socketError);
@@ -35,6 +41,7 @@ private slots:
   void          handleDeclineCall(const unsigned int id);
   void		handleSendMessage(const unsigned int id, const QString &message);
   void		handleGetMessages(const unsigned int id);
+
 signals:
   void		error(const QString error);
   void		displayMessage(const QString &message);
@@ -46,6 +53,7 @@ signals:
   void          declinedCall(const unsigned int id);
   void		addContactResult(const bool result);
   void		message(const unsigned int id, const QString &message, const QString &date);
+
 private:
   void		tcpSend(const QString &message);
   void		getHelloInfos(const QStringList &stringList);
