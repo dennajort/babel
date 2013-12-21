@@ -1,5 +1,12 @@
 #include	"ServerData.hh"
 
-void	ServerData::removeClient(TcpClient *client)
+ServerData	ServerData::_instance;
+
+ServerData	&ServerData::getInstance()
+{
+  return _instance;
+}
+
+void	ServerData::removeClient(TcpClient::Ptr client)
 {
 }

@@ -3,21 +3,29 @@
 
 #include	<string>
 #include	<queue>
+#include        <boost/shared_ptr.hpp>
+#include        <boost/enable_shared_from_this.hpp>
 #include	<boost/asio.hpp>
 #include	<boost/array.hpp>
-#include	"ServerData.hh"
 
-class TcpClient
+class TcpClient : public boost::enable_shared_from_this<TcpClient>
 {
 public:
-  TcpClient(boost::asio::io_service &, ServerData *, unsigned int);
+  typedef boost::shared_ptr<TcpClient>	Ptr;
+
+  static Ptr	create(boost::asio::io_service &);
 
   void	start();
   void	send(const std::string &);
 
+  // Protocol abstraction
+  void	sendHello();
+
+  // Asio handlers
   void	handleLine(const boost::system::error_code &, std::size_t);
   void	handleWrite(const boost::system::error_code &);
 
+  // Parser handlers
   void	handleParserError();
   void	handleParserConnect(const std::string &, const std::string &) {}
   void	handleParserCreateAccount(const std::string &, const std::string &) {}
@@ -31,11 +39,13 @@ public:
   void	handleParserDeclineCall(unsigned int) {}
   void	handleParserGetMessages(unsigned int) {}
 
-  boost::asio::ip::tcp::socket &getSocket() { return _socket; }
+  // Getters
+  boost::asio::ip::tcp::socket &getSocket();
 
 private:
+  TcpClient(boost::asio::io_service &);
+
   boost::asio::ip::tcp::socket	_socket;
-  ServerData			*_data;
   bool				_isAuthenticated;
   unsigned int			_id;
   boost::asio::streambuf	_inBuffer;

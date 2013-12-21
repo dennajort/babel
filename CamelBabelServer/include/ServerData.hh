@@ -2,16 +2,19 @@
 #define __SERVER_DATA_HH__
 
 #include	<map>
-
-class TcpClient;
+#include	"TcpClient.hh"
 
 class ServerData
 {
 public:
-  void	removeClient(TcpClient *);
+  static ServerData	&getInstance();
+
+  void	removeClient(TcpClient::Ptr);
 
 private:
-  std::map<unsigned int, TcpClient *>	_clients;
+  static ServerData				_instance;
+
+  std::map<unsigned int, TcpClient::Ptr>	_clients;
 };
 
 #endif
