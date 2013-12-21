@@ -8,12 +8,16 @@
 #include	<boost/asio.hpp>
 #include	<boost/array.hpp>
 
+class Parser;
+
 class TcpClient : public boost::enable_shared_from_this<TcpClient>
 {
 public:
   typedef boost::shared_ptr<TcpClient>	Ptr;
 
   static Ptr	create(boost::asio::io_service &);
+
+  ~TcpClient();
 
   void	start();
   void	send(const std::string &);
@@ -48,6 +52,7 @@ private:
   boost::asio::ip::tcp::socket	_socket;
   bool				_isAuthenticated;
   unsigned int			_id;
+  Parser			*_parser;
   boost::asio::streambuf	_inBuffer;
   std::queue<std::string>	_outBuffer;
 };

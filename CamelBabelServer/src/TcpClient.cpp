@@ -2,6 +2,7 @@
 #include	<boost/format.hpp>
 #include	"TcpClient.hh"
 #include	"ServerData.hh"
+#include	"Parser.hh"
 
 using namespace boost::asio;
 
@@ -13,8 +14,14 @@ TcpClient::Ptr	TcpClient::create(io_service &io)
 TcpClient::TcpClient(io_service &io) :
   _socket(io),
   _isAuthenticated(false),
-  _id(42)
+  _id(42),
+  _parser(new Parser(this))
 {
+}
+
+TcpClient::~TcpClient()
+{
+  delete _parser;
 }
 
 void	TcpClient::start()
@@ -47,7 +54,7 @@ void	TcpClient::handleLine(const boost::system::error_code& error, std::size_t s
       std::string	line((std::istreambuf_iterator<char>(&_inBuffer)), std::istreambuf_iterator<char>());
 
       std::cout << "Get: " << line;
-      //_parser.parse(line);
+      _parser->parse(line);
       async_read_until(_socket, _inBuffer, '\n',
 		       boost::bind(&TcpClient::handleLine, shared_from_this(), boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
     }
