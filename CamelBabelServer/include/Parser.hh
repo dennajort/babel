@@ -7,7 +7,7 @@
 class	Parser
 {
 public:
-  Parser(TcpClient *);
+  Parser(TcpClient::Ptr);
   ~Parser();
 
   void	parse(const std::string &);
@@ -56,7 +56,7 @@ private:
 
   std::string			_line;
   std::string::const_iterator	_i;
-  TcpClient			*_client;
+  TcpClient::Ptr		_client;
   std::string			_buff2;
   std::string			_buff1;
 };

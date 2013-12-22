@@ -1,5 +1,6 @@
 #include	<boost/bind.hpp>
 #include	<boost/format.hpp>
+#include	<cstdlib>
 #include	"TcpClient.hh"
 #include	"ServerData.hh"
 #include	"Parser.hh"
@@ -14,14 +15,18 @@ TcpClient::Ptr	TcpClient::create(io_service &io)
 TcpClient::TcpClient(io_service &io) :
   _socket(io),
   _isAuthenticated(false),
-  _id(42),
-  _parser(new Parser(this))
+  _id(ServerData::getInstance().generateId()),
+  _salt("")
 {
+  static const char hexdigits[] = "0123456789abcdef";
+
+  for (int n = 0; n < 40; n++)
+    _salt += hexdigits[rand() % 16];
 }
 
 TcpClient::~TcpClient()
 {
-  delete _parser;
+  ServerData::getInstance().releaseId(_id);
 }
 
 void	TcpClient::start()
@@ -44,7 +49,12 @@ void	TcpClient::send(const std::string &data)
 
 void	TcpClient::sendHello()
 {
-  send((boost::format("HELLO\t%1%\t%2%\n") % _id % "hash").str());
+  send((boost::format("HELLO\t%1%\t%2%\n") % _id % _salt).str());
+}
+
+void	TcpClient::sendResp(unsigned int code, const std::string &msg)
+{
+  send((boost::format("RESP\t%1%\t%2%\n") % code % msg).str());
 }
 
 void	TcpClient::handleLine(const boost::system::error_code& error, std::size_t size)
@@ -52,13 +62,14 @@ void	TcpClient::handleLine(const boost::system::error_code& error, std::size_t s
   if (!error)
     {
       std::string	line((std::istreambuf_iterator<char>(&_inBuffer)), std::istreambuf_iterator<char>());
+      Parser		parser(shared_from_this());
 
       std::cout << "Get: " << line;
-      _parser->parse(line);
+      parser.parse(line);
       async_read_until(_socket, _inBuffer, '\n',
 		       boost::bind(&TcpClient::handleLine, shared_from_this(), boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
     }
-  else if (_isAuthenticated)
+  else
     ServerData::getInstance().removeClient(shared_from_this());
 }
 
@@ -72,16 +83,27 @@ void	TcpClient::handleWrite(const boost::system::error_code& error)
       async_write(_socket, buffer(_outBuffer.front().data(), _outBuffer.front().length()),
 		  boost::bind(&TcpClient::handleWrite, shared_from_this(), boost::asio::placeholders::error));      
     }
-  else if (_isAuthenticated)
+  else
     ServerData::getInstance().removeClient(shared_from_this());
-}
-
-void	TcpClient::handleParserError()
-{
-  std::cerr << "Error Parser" << std::endl;
 }
 
 ip::tcp::socket	&TcpClient::getSocket()
 {
   return _socket;
 }
+
+bool	TcpClient::isAuthenticated() const
+{
+  return _isAuthenticated;
+}
+
+const std::string	&TcpClient::getSalt() const
+{
+  return _salt;
+}
+
+void	TcpClient::setAuthenticated(bool authenticated)
+{
+  _isAuthenticated = authenticated;
+}
+

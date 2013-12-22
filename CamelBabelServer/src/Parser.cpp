@@ -1,7 +1,8 @@
 #include <boost/lexical_cast.hpp>
 #include "Parser.hh"
+#include "ServerData.hh"
 
-Parser::Parser(TcpClient *client)
+Parser::Parser(TcpClient::Ptr client)
   : _client(client)
 {
 
@@ -10,7 +11,6 @@ Parser::Parser(TcpClient *client)
 
 Parser::~Parser()
 {
-
 }
 
 void
@@ -31,7 +31,7 @@ Parser::parse(const std::string &line)
     case 'D':
       return caseFirstD();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -44,7 +44,7 @@ Parser::caseFirstS()
     case 'E':
       return caseSecondE();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -59,7 +59,7 @@ Parser::caseFirstA()
     case 'C':
       return caseAcceptCall();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -74,7 +74,7 @@ Parser::caseSecondE()
     case 'N':
       return caseSendMessage();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -91,7 +91,7 @@ Parser::caseFirstC()
     case 'A':
       return caseCall();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -104,7 +104,7 @@ Parser::caseFirstD()
     case 'E':
       return caseFirstDE();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -119,7 +119,7 @@ Parser::caseFirstDE()
     case 'C':
       return caseDeclineCall();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -132,7 +132,7 @@ Parser::caseConnect()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseConnectUsername();
@@ -145,10 +145,10 @@ Parser::caseConnectUsername()
   switch (*_i)
     {
     case '\n':
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     case '\t':
       if (_buff1.empty())
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
       _buff2 = "";
       return caseConnectPassword();
     default:
@@ -165,10 +165,10 @@ Parser::caseConnectPassword()
     {
     case '\n':
       if (_buff2.empty())
-        return _client->handleParserError();
-      return _client->handleParserConnect(_buff1, _buff2);
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserConnect(_client, _buff1, _buff2);
     case '\t':
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     default:
       _buff2 += *_i;
       return caseConnectPassword();
@@ -184,7 +184,7 @@ Parser::caseCreateAccount()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseCreateAccountUsername();
@@ -197,10 +197,10 @@ Parser::caseCreateAccountUsername()
   switch (*_i)
     {
     case '\n':
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     case '\t':
       if (_buff1.empty())
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
       _buff2 = "";
       return caseCreateAccountPassword();
     default:
@@ -217,10 +217,10 @@ Parser::caseCreateAccountPassword()
     {
     case '\n':
       if (_buff2.empty())
-        return _client->handleParserError();
-      return _client->handleParserCreateAccount(_buff1, _buff2);
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserCreateAccount(_client, _buff1, _buff2);
     case '\t':
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     default:
       _buff2 += *_i;
       return caseCreateAccountPassword();
@@ -236,7 +236,7 @@ Parser::caseCall()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseCallId();
@@ -250,13 +250,13 @@ Parser::caseCallId()
     {
     case '\n':
       if (_buff1.empty())
-        return _client->handleParserError();
-      return _client->handleParserCallId(boost::lexical_cast<unsigned int>(_buff1));
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserCallId(_client, boost::lexical_cast<unsigned int>(_buff1));
     case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
       _buff1 += *_i;
       return caseCallId();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -269,7 +269,7 @@ Parser::caseSetStatus()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseSetStatusNewStatusId();
@@ -283,14 +283,14 @@ Parser::caseSetStatusNewStatusId()
     {
     case '\t':
       if (_buff1.empty())
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
       _buff2 = "";
       return caseSetStatusNewStatusMood();
     case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
       _buff1 += *_i;
       return caseSetStatusNewStatusId();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -302,10 +302,10 @@ Parser::caseSetStatusNewStatusMood()
     {
     case '\n':
       if (_buff2.empty())
-        return _client->handleParserError();
-      return _client->handleParserSetStatus(boost::lexical_cast<unsigned int>(_buff1), _buff2);
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserSetStatus(_client, boost::lexical_cast<unsigned int>(_buff1), _buff2);
     case '\t':
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     default:
       _buff2 += *_i;
       return caseSetStatusNewStatusMood();
@@ -321,7 +321,7 @@ Parser::caseSendMessage()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseSendMessageToId();
@@ -335,14 +335,14 @@ Parser::caseSendMessageToId()
     {
     case '\t':
       if (_buff1.empty())
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
       _buff2 = "";
       return caseSendMessageMessage();
     case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
       _buff1 += *_i;
       return caseSendMessageToId();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -354,10 +354,10 @@ Parser::caseSendMessageMessage()
     {
     case '\n':
       if (_buff2.empty())
-        return _client->handleParserError();
-      return _client->handleParserSendMessage(boost::lexical_cast<unsigned int>(_buff1), _buff2);
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserSendMessage(_client, boost::lexical_cast<unsigned int>(_buff1), _buff2);
     case '\t':
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     default:
       _buff2 += *_i;
       return caseSendMessageMessage();
@@ -373,9 +373,9 @@ Parser::caseListContacts()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
-  return _client->handleParserListContacts();
+  return ServerData::getInstance().handleParserListContacts(_client);
 }
  
 void
@@ -387,7 +387,7 @@ Parser::caseAddContact()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseAddContactUsername();
@@ -401,10 +401,10 @@ Parser::caseAddContactUsername()
     {
     case '\n':
       if (_buff1.empty())
-        return _client->handleParserError();
-      return _client->handleParserAddContact(_buff1);
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserAddContact(_client, _buff1);
     case '\t':
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     default:
       _buff1 += *_i;
       return caseAddContactUsername();
@@ -420,7 +420,7 @@ Parser::caseDeleteContact()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseDeleteContactId();
@@ -434,13 +434,13 @@ Parser::caseDeleteContactId()
     {
     case '\n':
       if (_buff1.empty())
-        return _client->handleParserError();
-      return _client->handleParserDeleteContact(boost::lexical_cast<unsigned int>(_buff1));
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserDeleteContact(_client, boost::lexical_cast<unsigned int>(_buff1));
     case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
       _buff1 += *_i;
       return caseDeleteContactId();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -453,7 +453,7 @@ Parser::caseDeclineCall()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseDeclineCallId();
@@ -467,13 +467,13 @@ Parser::caseDeclineCallId()
     {
     case '\n':
       if (_buff1.empty())
-        return _client->handleParserError();
-      return _client->handleParserDeclineCall(boost::lexical_cast<unsigned int>(_buff1));
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserDeclineCall(_client, boost::lexical_cast<unsigned int>(_buff1));
     case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
       _buff1 += *_i;
       return caseDeclineCallId();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -486,7 +486,7 @@ Parser::caseAcceptCall()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseDeclineCallId();
@@ -500,13 +500,13 @@ Parser::caseAcceptCallId()
     {
     case '\n':
       if (_buff1.empty())
-        return _client->handleParserError();
-      return _client->handleParserAcceptCall(boost::lexical_cast<unsigned int>(_buff1));
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserAcceptCall(_client, boost::lexical_cast<unsigned int>(_buff1));
     case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
       _buff1 += *_i;
       return caseAcceptCallId();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 
@@ -519,7 +519,7 @@ Parser::caseGetMessages()
     {
       _i++;
       if (*i != *_i)
-        return _client->handleParserError();
+        return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
   return caseGetMessagesId();
@@ -533,12 +533,12 @@ Parser::caseGetMessagesId()
     {
     case '\n':
       if (_buff1.empty())
-        return _client->handleParserError();
-      return _client->handleParserGetMessages(boost::lexical_cast<unsigned int>(_buff1));
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserGetMessages(_client, boost::lexical_cast<unsigned int>(_buff1));
     case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
       _buff1 += *_i;
       return caseGetMessagesId();
     default:
-      return _client->handleParserError();
+      return ServerData::getInstance().handleParserError(_client);
     }
 }

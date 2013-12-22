@@ -1,9 +1,12 @@
 #include	<boost/asio.hpp>
-#include	<iostream>
+#include	<cstdlib>
 #include	"TcpServer.hh"
+#include	"ServerData.hh"
 
 int	main(int ac, char **av)
 {
+  srand(time(NULL));
+  ServerData::getInstance().connectToMongo();
   try
     {
       boost::asio::io_service	io;
@@ -11,9 +14,10 @@ int	main(int ac, char **av)
 
       io.run();
     }
-  catch (std::exception &e)
+  catch (const std::exception &e)
     {
-      std::cerr << "Exception: " << e.what() << std::endl;
+      std::cerr << "Catch: " << e.what() << std::endl;
+      return 1;
     }
   return 0;
 }

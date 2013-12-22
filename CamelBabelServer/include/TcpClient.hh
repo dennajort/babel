@@ -24,27 +24,19 @@ public:
 
   // Protocol abstraction
   void	sendHello();
+  void	sendResp(unsigned int, const std::string &);
 
   // Asio handlers
   void	handleLine(const boost::system::error_code &, std::size_t);
   void	handleWrite(const boost::system::error_code &);
 
-  // Parser handlers
-  void	handleParserError();
-  void	handleParserConnect(const std::string &, const std::string &) {}
-  void	handleParserCreateAccount(const std::string &, const std::string &) {}
-  void	handleParserCallId(unsigned int) {}
-  void	handleParserSetStatus(unsigned int, const std::string &) {}
-  void	handleParserSendMessage(unsigned int, const std::string &) {}
-  void	handleParserListContacts() {}
-  void	handleParserAddContact(const std::string &) {}
-  void	handleParserDeleteContact(unsigned int) {}
-  void	handleParserAcceptCall(unsigned int) {}
-  void	handleParserDeclineCall(unsigned int) {}
-  void	handleParserGetMessages(unsigned int) {}
-
   // Getters
-  boost::asio::ip::tcp::socket &getSocket();
+  boost::asio::ip::tcp::socket	&getSocket();
+  bool				isAuthenticated() const;
+  const std::string		&getSalt() const;
+
+  // Setters
+  void				setAuthenticated(bool);
 
 private:
   TcpClient(boost::asio::io_service &);
@@ -52,7 +44,7 @@ private:
   boost::asio::ip::tcp::socket	_socket;
   bool				_isAuthenticated;
   unsigned int			_id;
-  Parser			*_parser;
+  std::string			_salt;
   boost::asio::streambuf	_inBuffer;
   std::queue<std::string>	_outBuffer;
 };
