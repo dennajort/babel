@@ -16,7 +16,9 @@ TcpClient::TcpClient(io_service &io) :
   _socket(io),
   _isAuthenticated(false),
   _id(ServerData::getInstance().generateId()),
-  _salt("")
+  _salt(""),
+  _mood(""),
+  _state(0)
 {
   static const char hexdigits[] = "0123456789abcdef";
 
@@ -55,6 +57,11 @@ void	TcpClient::sendHello()
 void	TcpClient::sendResp(unsigned int code, const std::string &msg)
 {
   send((boost::format("RESP\t%1%\t%2%\n") % code % msg).str());
+}
+
+void	TcpClient::sendContact(unsigned int id, const std::string &username, unsigned int state, const std::string &mood)
+{
+  send((boost::format("CONTACT\t%1%\t%2%\t%3%\t%4%\n") % id % username % state % mood).str());
 }
 
 void	TcpClient::handleLine(const boost::system::error_code& error, std::size_t size)
@@ -102,8 +109,47 @@ const std::string	&TcpClient::getSalt() const
   return _salt;
 }
 
+const mongo::OID	&TcpClient::getOID() const
+{
+  return _oid;
+}
+
+unsigned int		TcpClient::getState() const
+{
+  return _state;
+}
+
+const std::string	&TcpClient::getMood() const
+{
+  return _mood;
+}
+
+const std::string	&TcpClient::getUsername() const
+{
+  return _username;
+}
+
 void	TcpClient::setAuthenticated(bool authenticated)
 {
   _isAuthenticated = authenticated;
 }
 
+void	TcpClient::setOID(const mongo::OID &oid)
+{
+  _oid = oid;
+}
+
+void	TcpClient::setState(unsigned int state)
+{
+  _state = state;
+}
+
+void	TcpClient::setMood(const std::string &mood)
+{
+  _mood = mood;
+}
+
+void	TcpClient::setUsername(const std::string &username)
+{
+  _username = username;
+}
