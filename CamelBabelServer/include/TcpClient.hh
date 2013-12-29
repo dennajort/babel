@@ -27,6 +27,9 @@ public:
   void	sendHello();
   void	sendResp(unsigned int, const std::string &);
   void	sendContact(unsigned int, const std::string &, unsigned int, const std::string &);
+  void	sendCall(unsigned int);
+  void	sendContactIp(unsigned int, const std::string &);
+  void	sendDeclinedCall(unsigned int);
 
   // Asio handlers
   void	handleLine(const boost::system::error_code &, std::size_t);

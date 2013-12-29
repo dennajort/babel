@@ -64,6 +64,21 @@ void	TcpClient::sendContact(unsigned int id, const std::string &username, unsign
   send((boost::format("CONTACT\t%1%\t%2%\t%3%\t%4%\n") % id % username % state % mood).str());
 }
 
+void	TcpClient::sendCall(unsigned int id)
+{
+  send((boost::format("CALL\t%1%\n") % id).str());
+}
+
+void	TcpClient::sendContactIp(unsigned int id, const std::string &addr)
+{
+  send((boost::format("CONTACT_IP\t%1%\t%2%\n") % id % addr).str());
+}
+
+void	TcpClient::sendDeclinedCall(unsigned int id)
+{
+  send((boost::format("DECLINED_CALL\t%1%\n") % id).str());
+}
+
 void	TcpClient::handleLine(const boost::system::error_code& error, std::size_t size)
 {
   if (!error)

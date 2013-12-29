@@ -263,7 +263,7 @@ Parser::caseCallId()
 void
 Parser::caseSetStatus()
 {
-  std::string	tmp("T_STATUS\t");
+  std::string	tmp("_STATUS\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
@@ -301,8 +301,6 @@ Parser::caseSetStatusNewStatusMood()
   switch (*_i)
     {
     case '\n':
-      if (_buff2.empty())
-        return ServerData::getInstance().handleParserError(_client);
       return ServerData::getInstance().handleParserSetStatus(_client, boost::lexical_cast<unsigned int>(_buff1), _buff2);
     case '\t':
       return ServerData::getInstance().handleParserError(_client);
@@ -489,7 +487,7 @@ Parser::caseAcceptCall()
         return ServerData::getInstance().handleParserError(_client);
     }
   _buff1 = "";
-  return caseDeclineCallId();
+  return caseAcceptCallId();
 }
 
 void

@@ -23,16 +23,16 @@ public:
 
   // Parser handlers
   void	handleParserError(TcpClient::Ptr);
-  void	handleParserConnect(TcpClient::Ptr, const std::string &, const std::string &);
   void	handleParserCreateAccount(TcpClient::Ptr, const std::string &, const std::string &);
-  void	handleParserCallId(TcpClient::Ptr, unsigned int) {}
+  void	handleParserConnect(TcpClient::Ptr, const std::string &, const std::string &);
   void	handleParserSetStatus(TcpClient::Ptr, unsigned int, const std::string &);
-  void	handleParserSendMessage(TcpClient::Ptr, unsigned int, const std::string &) {}
   void	handleParserListContacts(TcpClient::Ptr);
   void	handleParserAddContact(TcpClient::Ptr, const std::string &);
   void	handleParserDeleteContact(TcpClient::Ptr, unsigned int);
-  void	handleParserAcceptCall(TcpClient::Ptr, unsigned int) {}
-  void	handleParserDeclineCall(TcpClient::Ptr, unsigned int) {}
+  void	handleParserCallId(TcpClient::Ptr, unsigned int);
+  void	handleParserAcceptCall(TcpClient::Ptr, unsigned int);
+  void	handleParserDeclineCall(TcpClient::Ptr, unsigned int);
+  void	handleParserSendMessage(TcpClient::Ptr, unsigned int, const std::string &) {}
   void	handleParserGetMessages(TcpClient::Ptr, unsigned int) {}
 
 private:
