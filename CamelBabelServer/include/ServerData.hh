@@ -29,8 +29,8 @@ public:
   void	handleParserSetStatus(TcpClient::Ptr, unsigned int, const std::string &);
   void	handleParserSendMessage(TcpClient::Ptr, unsigned int, const std::string &) {}
   void	handleParserListContacts(TcpClient::Ptr);
-  void	handleParserAddContact(TcpClient::Ptr, const std::string &) {}
-  void	handleParserDeleteContact(TcpClient::Ptr, unsigned int) {}
+  void	handleParserAddContact(TcpClient::Ptr, const std::string &);
+  void	handleParserDeleteContact(TcpClient::Ptr, unsigned int);
   void	handleParserAcceptCall(TcpClient::Ptr, unsigned int) {}
   void	handleParserDeclineCall(TcpClient::Ptr, unsigned int) {}
   void	handleParserGetMessages(TcpClient::Ptr, unsigned int) {}

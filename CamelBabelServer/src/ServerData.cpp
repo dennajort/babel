@@ -71,7 +71,7 @@ void	ServerData::sendContacts(TcpClient::Ptr client)
 		{
 		  TcpClient::Ptr	contact = _clients.left.at(id);
 
-		  client->sendContact(id, tmp["username"].String(), contact->getState(), contact->getMood());
+		  client->sendContact(id, contact->getUsername(), contact->getState(), contact->getMood());
 		}
 	    }
 	}
@@ -141,6 +141,45 @@ void	ServerData::handleParserSetStatus(TcpClient::Ptr client, unsigned int state
 void	ServerData::handleParserListContacts(TcpClient::Ptr client)
 {
   sendContacts(client);
+}
+
+void	ServerData::handleParserAddContact(TcpClient::Ptr client, const std::string &username)
+{
+  if (!client->isAuthenticated())
+    client->sendResp(403, "Unauthorized to add contact");
+  else
+    {
+      mongo::BSONObj	obj = _mongo.findOne(MONGODB_COL_USERS, BSON("username" << username));
+
+      if (obj.isEmpty())
+	client->sendResp(403, "User does not exists");
+      else
+	{
+	  unsigned int		id = tools::OIDToUint(obj["_id"].OID());
+
+	  _mongo.update(MONGODB_COL_USERS, BSON("_id" << client->getOID()), BSON("$addToSet" << BSON("contacts" << obj["_id"].OID())));
+	  client->sendResp(200, "Contact added");
+	  if (_clients.left.count(id) == 0)
+	    client->sendContact(id, obj["username"].String(), 0, "");
+	  else
+	    {
+	      TcpClient::Ptr	contact = _clients.left.at(id);
+	      
+	      client->sendContact(id, contact->getUsername(), contact->getState(), contact->getMood());
+	    }
+	}
+    }
+}
+
+void	ServerData::handleParserDeleteContact(TcpClient::Ptr client, unsigned int id)
+{
+  if (!client->isAuthenticated())
+    client->sendResp(403, "Unauthorized to delete contact");
+  else
+    {
+      _mongo.update(MONGODB_COL_USERS, BSON("_id" << client->getOID()), BSON("$pull" << BSON("contacts" << tools::uintToOID(id))));
+      client->sendResp(200, "Contact deleted");
+    }
 }
 
 void	ServerData::handleParserError(TcpClient::Ptr client)
