@@ -46,7 +46,8 @@ SipHandler::SipHandler(QObject *parent) :
           parent, SLOT(clientConnected(const bool)));
   connect(this, SIGNAL(contact(const unsigned int, const QString&, const unsigned int, const QString&)),
           parent, SLOT(contact(const unsigned int, const QString&, const unsigned int, const QString&)));
-  //connect(this, SIGNAL(callRequest(const unsigned int)), parent, SLOT());
+  connect(this, SIGNAL(callRequest(const unsigned int)),
+          parent, SLOT(callRequest(const unsigned int)));
   //connect(this, SIGNAL(contactIp(const unsigned int, const QString&)), parent, SLOT());
   //connect(this, SIGNAL(declinedCall(const unsigned int)), parent, SLOT());
   connect(this, SIGNAL(addContactResult(bool)),
@@ -64,12 +65,11 @@ bool SipHandler::isConnected()
   return (_socket->state() == QTcpSocket::ConnectedState);
 }
 
-//
-// A Verifier
-//
-void SipHandler::setStatus(int status)
+void SipHandler::setStatus(const unsigned int status)
 {
-  tcpSend(QString(SIP_SET_STATUS) + '\t' + status);
+  QString st = QString::number(status);
+
+  tcpSend(QString(SIP_SET_STATUS) + '\t' + st);
 }
 
 void SipHandler::connectMe()

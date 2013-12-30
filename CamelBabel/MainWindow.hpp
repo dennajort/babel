@@ -38,6 +38,7 @@ public slots:
   void          registerError();
   void		contact(const unsigned int id, const QString &username,
 			const unsigned int status, const QString &mood);
+  void          callRequest(const unsigned int id);
   void          addContactResult(bool res);
   void          changeStatus(int index);
 
@@ -58,6 +59,7 @@ protected:
 
 private:
   void          addChat(const unsigned int id, const QString &contact, const unsigned int status);
+  QListWidgetItem *getContactById(const unsigned int id);
   bool          contactAlreadyAdded(const QString &contact) const;
   void          moveListItemToPos(const int fromPos, const int toPos);
   void          moveChatWidgetToPos(const int fromPos, const int toPos);

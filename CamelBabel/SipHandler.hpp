@@ -21,7 +21,7 @@ public:
   SipHandler(QObject *parent = 0);
   ~SipHandler();
   bool          isConnected();
-  void          setStatus(int status);
+  void          setStatus(const unsigned int status);
 
 public slots:
   void		connectMe();

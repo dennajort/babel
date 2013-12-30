@@ -171,6 +171,28 @@ void MainWindow::contact(const unsigned int id, const QString &username,
   addChat(id, username, status);
 }
 
+void MainWindow::callRequest(const unsigned int id)
+{
+  QListWidgetItem       *item = getContactById(id);
+  if (item != NULL && _inCall == false)
+    {
+      _ui->contactList->setCurrentItem(item);
+      _ui->chatStack->setCurrentIndex(_ui->contactList->currentRow());
+      qDebug() << "call request";
+      int ret = QMessageBox::question(this, "Call request", "Accept call from " + item->text(),
+                                     QMessageBox::Yes | QMessageBox::No);
+      if (ret == QMessageBox::Yes)
+        {
+          (reinterpret_cast<ChatWidget*>(_ui->chatStack->currentWidget()))->callClicked();
+          emit acceptCall(id);
+        }
+      else
+        emit declineCall(id);
+    }
+  else
+    emit declineCall(id);
+}
+
 void MainWindow::addContactResult(bool res)
 {
   if (res)
@@ -226,17 +248,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::addChat(const unsigned int id, const QString &contact, const unsigned int status)
 {
   (void)status;
-  QListWidgetItem       *item = NULL;
+  QListWidgetItem       *item = getContactById(id);
 
-  for (int i = 1; i < _ui->contactList->count(); ++i)
-    {
-      QListWidgetItem *tmp = _ui->contactList->item(i);
-      if (tmp->data(Qt::UserRole).toUInt() == id)
-        {
-          item = tmp;
-          break;
-        }
-    }
   if (item == NULL)
     {
       item = new QListWidgetItem(_offlineImg, contact);
@@ -263,6 +276,21 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
       else
         item->setIcon(_awayImg);
     }
+}
+
+QListWidgetItem *MainWindow::getContactById(const unsigned int id)
+{
+  QListWidgetItem       *item = NULL;
+
+  for (int i = 0; i < _ui->contactList->count(); ++i)
+    {
+      QListWidgetItem *tmp = _ui->contactList->item(i);
+      if (tmp->data(Qt::UserRole).toUInt() == id)
+        {
+          return (tmp);
+        }
+    }
+  return (NULL);
 }
 
 bool MainWindow::contactAlreadyAdded(const QString &contact) const
