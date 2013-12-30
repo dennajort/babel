@@ -159,6 +159,11 @@ void MainWindow::disconnected()
     }
 }
 
+void  MainWindow::registerError()
+{
+  qDebug() << "register error";
+}
+
 void MainWindow::contact(const unsigned int id, const QString &username,
 			 const unsigned int status, const QString &mood)
 {
