@@ -38,7 +38,8 @@ SipHandler::SipHandler(QObject *parent) :
   connect(parent, SIGNAL(getMessages(const unsigned int)),
 	  this, SLOT(handleGetMessages(const unsigned int)));
 
-  //connect(this, SIGNAL(displayMessage(const QString&)), parent, SLOT());
+  connect(this, SIGNAL(displayMessage(const QString&)),
+          parent, SLOT(displayMessage(const QString&)));
   //connect(this, SIGNAL(registerError()), parent, SLOT());
   connect(this, SIGNAL(clientConnected(const bool)),
           parent, SLOT(clientConnected(const bool)));

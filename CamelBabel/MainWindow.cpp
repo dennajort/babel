@@ -115,6 +115,11 @@ void MainWindow::callFinished()
   emit changeCallButton(true);
 }
 
+void MainWindow::displayMessage(const QString &message)
+{
+  _trayIcon->showMessage("Error", message, QSystemTrayIcon::MessageIcon(2), 4000);
+}
+
 void MainWindow::clientConnected(const bool res)
 {
   int   currentIndex = _ui->statusCombo->currentIndex();
