@@ -24,6 +24,11 @@ ChatWidget::~ChatWidget()
   delete _ui;
 }
 
+void ChatWidget::appendMessage(const QString &name, const QString &date, const QString &message)
+{
+  _ui->chatText->append("<b><font color=\"#D00000\">(" + date + ") " + name + ": </font></b>" + message);
+}
+
 void ChatWidget::callClicked()
 {
   if (!_inCall)

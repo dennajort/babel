@@ -17,6 +17,7 @@ public:
   explicit    ChatWidget(const QString &me, const QString &contact, bool incall,
                          RTPCallManager *rtpCallManager, QWidget *parent = 0);
   virtual     ~ChatWidget();
+  void        appendMessage(const QString &name, const QString &date, const QString &message);
   
 public slots:
   void        callClicked();

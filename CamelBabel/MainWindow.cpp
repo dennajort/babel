@@ -238,6 +238,14 @@ void MainWindow::sendMessageToCurrent(const QString &message)
   emit sendMessage(_ui->contactList->currentItem()->data(Qt::UserRole).toUInt(), message);
 }
 
+void MainWindow::message(const unsigned int id, const QString &message, const QString &date)
+{
+  QListWidgetItem       *item = getContactById(id);
+
+  if (item != NULL)
+    (reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item))))->appendMessage(item->text(), date, message);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
   if (_trayIcon->isVisible())

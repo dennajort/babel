@@ -52,7 +52,8 @@ SipHandler::SipHandler(QObject *parent) :
   //connect(this, SIGNAL(declinedCall(const unsigned int)), parent, SLOT());
   connect(this, SIGNAL(addContactResult(bool)),
           parent, SLOT(addContactResult(bool)));
-  //connect(this, SIGNAL(message(const unsigned int, const QString&, const QString&)), parent, SLOT());
+  connect(this, SIGNAL(message(const unsigned int, const QString&, const QString&)),
+          parent, SLOT(message(const unsigned int, const QString&, const QString&)));
 }
 
 SipHandler::~SipHandler()
