@@ -127,6 +127,8 @@ void MainWindow::clientConnected(const bool res)
   qDebug() << "MainWindow::clientConnected";
   if (res && currentIndex >= 0 && currentIndex < 3)
     {
+      QSettings settings;
+      _me = settings.value("account/username", "").toString();//////////////////////////////////////////////:
       if (!currentIndex)
         {
           _trayIcon->setIcon(_availableImg);
@@ -231,6 +233,11 @@ void MainWindow::changeStatus(int index)
     }
 }
 
+void MainWindow::sendMessageToCurrent(const QString &message)
+{
+  emit sendMessage(_ui->contactList->currentItem()->data(Qt::UserRole).toUInt(), message);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
   if (_trayIcon->isVisible())
@@ -253,7 +260,7 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
   if (item == NULL)
     {
       item = new QListWidgetItem(_offlineImg, contact);
-      ChatWidget		*chat = new ChatWidget(_me, contact, _inCall, _rtpCallManager, this);
+      ChatWidget		*chat = new ChatWidget(_me, contact, _inCall, _rtpCallManager, this);///////////////////////////////////
 
       connect(chat, SIGNAL(callStarted()),
               this, SLOT(callStarted()));
@@ -280,8 +287,6 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
 
 QListWidgetItem *MainWindow::getContactById(const unsigned int id)
 {
-  QListWidgetItem       *item = NULL;
-
   for (int i = 0; i < _ui->contactList->count(); ++i)
     {
       QListWidgetItem *tmp = _ui->contactList->item(i);

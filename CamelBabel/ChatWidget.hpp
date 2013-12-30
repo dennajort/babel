@@ -21,10 +21,12 @@ public:
 public slots:
   void        callClicked();
   void        setCallButton(bool stat);
+  void        sendText();
 
 signals:
   void        callStarted();
   void        callFinished();
+  void        sendMessageToCurrent(const QString &message);
 
 private:
   Ui::ChatWidget      *_ui;

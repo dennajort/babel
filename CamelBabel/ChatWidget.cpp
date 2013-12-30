@@ -1,3 +1,4 @@
+#include <QTime>
 #include "ChatWidget.hpp"
 #include "ui_ChatWidget.h"
 
@@ -13,6 +14,9 @@ ChatWidget::ChatWidget(const QString &me, const QString &contact, bool incall,
   _ui->setupUi(this);
   if (incall)
     _ui->callButton->setEnabled(false);
+  connect(_ui->userInput, SIGNAL(returnPressed()), this, SLOT(sendText()));
+  connect(this, SIGNAL(sendMessageToCurrent(const QString&)),
+          parent, SLOT(sendMessageToCurrent(const QString&)));
 }
 
 ChatWidget::~ChatWidget()
@@ -42,4 +46,15 @@ void ChatWidget::setCallButton(bool status)
 {
   if (!_inCall)
     _ui->callButton->setEnabled(status);
+}
+
+void ChatWidget::sendText()
+{
+  if(!_ui->userInput->text().isEmpty())
+    {
+      QTime time = QTime::currentTime();
+      emit sendMessageToCurrent(_ui->userInput->text());
+      _ui->chatText->append("<b><font color=\"#3333CC\">(" + time.toString() + ") " +_me + ": </font></b>" + _ui->userInput->text());
+      _ui->userInput->clear();
+    }
 }

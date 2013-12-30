@@ -41,6 +41,7 @@ public slots:
   void          callRequest(const unsigned int id);
   void          addContactResult(bool res);
   void          changeStatus(int index);
+  void          sendMessageToCurrent(const QString &message);
 
 signals:
   void          setStatus(const unsigned int status, const QString &mood);
