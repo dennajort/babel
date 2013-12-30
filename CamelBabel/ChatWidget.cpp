@@ -53,7 +53,7 @@ void ChatWidget::sendText()
   if(!_ui->userInput->text().isEmpty())
     {
       QTime time = QTime::currentTime();
-      emit sendMessageToCurrent(_ui->userInput->text());
+      emit sendMessageToCurrent(_ui->userInput->text().replace('\t', "    "));
       _ui->chatText->append("<b><font color=\"#3333CC\">(" + time.toString() + ") " +_me + ": </font></b>" + _ui->userInput->text());
       _ui->userInput->clear();
     }
