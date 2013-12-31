@@ -29,6 +29,11 @@ void ChatWidget::appendMessage(const QString &name, const QString &date, const Q
   _ui->chatText->append("<b><font color=\"#D00000\">(" + date + ") " + name + ": </font></b>" + message);
 }
 
+void ChatWidget::startCall(const QString &ip)
+{
+  _rtpCallManager->call(ip, 1337);
+}
+
 void ChatWidget::callClicked()
 {
   if (!_inCall)
@@ -36,14 +41,13 @@ void ChatWidget::callClicked()
       _ui->callButton->setIcon(QIcon::fromTheme("call-stop"));
       _inCall = true;
       emit callStarted();
-//      _rtpCallManager->call();
     }
   else
     {
       _ui->callButton->setIcon(QIcon::fromTheme("call-start"));
       emit callFinished();
       _inCall = false;
-//      _rtpCallManager->finishCall();
+      _rtpCallManager->finishCall();
     }
 }
 

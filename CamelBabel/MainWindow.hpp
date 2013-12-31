@@ -39,6 +39,8 @@ public slots:
   void		contact(const unsigned int id, const QString &username,
 			const unsigned int status, const QString &mood);
   void          callRequest(const unsigned int id);
+  void          contactIp(const unsigned int id, const QString &ip);
+  void          declinedCall(const unsigned int id);
   void          addContactResult(bool res);
   void          changeStatus(int index);
   void          sendMessageToCurrent(const QString &message);

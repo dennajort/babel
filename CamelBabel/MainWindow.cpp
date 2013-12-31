@@ -105,8 +105,11 @@ void MainWindow::contactSelected()
 
 void MainWindow::callStarted()
 {
+  QListWidgetItem *tmp = _ui->contactList->currentItem();
+
   _inCall = true;
   emit changeCallButton(false);
+  emit call(tmp->data(Qt::UserRole).toUInt());
 }
 
 void MainWindow::callFinished()
@@ -180,7 +183,6 @@ void MainWindow::callRequest(const unsigned int id)
     {
       _ui->contactList->setCurrentItem(item);
       _ui->chatStack->setCurrentIndex(_ui->contactList->currentRow());
-      qDebug() << "call request";
       int ret = QMessageBox::question(this, "Call request", "Accept call from " + item->text(),
                                      QMessageBox::Yes | QMessageBox::No);
       if (ret == QMessageBox::Yes)
@@ -193,6 +195,26 @@ void MainWindow::callRequest(const unsigned int id)
     }
   else
     emit declineCall(id);
+}
+
+void MainWindow::contactIp(const unsigned int id, const QString &ip)
+{
+  QListWidgetItem       *item = getContactById(id);
+
+  if (item != NULL)
+    {
+      (reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item))))->startCall(ip);
+    }
+}
+
+void MainWindow::declinedCall(const unsigned int id)
+{
+  QListWidgetItem       *item = getContactById(id);
+
+  if (item != NULL)
+    {
+      (reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item))))->callClicked();
+    }
 }
 
 void MainWindow::addContactResult(bool res)
