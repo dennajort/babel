@@ -293,8 +293,8 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
       item = new QListWidgetItem(_offlineImg, contact);
       ChatWidget		*chat = new ChatWidget(_me, contact, _inCall, _rtpCallManager, this);
 
-      connect(chat, SIGNAL(callStarted()),
-              this, SLOT(callStarted()));
+      connect(chat, SIGNAL(callStarted(const bool)),
+              this, SLOT(callStarted(const bool)));
       connect(chat, SIGNAL(callFinished()),
               this, SLOT(callFinished()));
       connect(this, SIGNAL(changeCallButton(bool)),
