@@ -17,7 +17,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
   if (settings.value("savePassword", true).toBool())
     _ui->saveMyPasswordCheckBox->setChecked(true);
   if (settings.value("register", true).toBool())
-    _ui->registerCheckBox->setCheckable(true);
+    _ui->registerCheckBox->setChecked(true);
   _ui->serverLineEdit->setText(settings.value("server", "localhost").toString());
   _ui->portLineEdit->setText(settings.value("port", "4242").toString());
   _ui->moodLineEdit->setText(settings.value("mood", "I love CamelBabel !").toString());
