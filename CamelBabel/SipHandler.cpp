@@ -153,7 +153,7 @@ void SipHandler::handleConnectUser(const QString &username, const QString &passw
   QByteArray	       	byteArray;
 
   sha1.addData(password.toLatin1().data());
-  byteArray = sha1.result();
+  byteArray = sha1.result().toHex();
   sha1.reset();
   byteArray += _hash;
   sha1.addData(byteArray);
