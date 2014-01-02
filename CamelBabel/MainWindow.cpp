@@ -187,7 +187,7 @@ void MainWindow::callRequest(const unsigned int id)
                                      QMessageBox::Yes | QMessageBox::No);
       if (ret == QMessageBox::Yes)
         {
-          (reinterpret_cast<ChatWidget*>(_ui->chatStack->currentWidget()))->callClicked();
+          (reinterpret_cast<ChatWidget*>(_ui->chatStack->currentWidget()))->callClicked(false);
           emit acceptCall(id);
         }
       else

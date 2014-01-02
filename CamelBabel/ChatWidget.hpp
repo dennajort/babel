@@ -21,7 +21,7 @@ public:
   void        startCall(const QString &ip);
   
 public slots:
-  void        callClicked();
+  void        callClicked(const bool startCall = true);
   void        setCallButton(bool stat);
   void        sendText();
 

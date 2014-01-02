@@ -34,13 +34,14 @@ void ChatWidget::startCall(const QString &ip)
   _rtpCallManager->call(ip, 1337);
 }
 
-void ChatWidget::callClicked()
+void ChatWidget::callClicked(const bool startCall)
 {
   if (!_inCall)
     {
       _ui->callButton->setIcon(QIcon::fromTheme("call-stop"));
       _inCall = true;
-      emit callStarted();
+      if (startCall)
+        emit callStarted();
     }
   else
     {
