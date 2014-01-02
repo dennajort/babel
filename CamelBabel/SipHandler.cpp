@@ -71,8 +71,10 @@ bool SipHandler::isConnected()
 void SipHandler::setStatus(const unsigned int status)
 {
   QString st = QString::number(status);
+  QSettings settings;
+  QString mood = settings.value("account/mood", "I love CamelBabel !").toString();
 
-  tcpSend(QString(SIP_SET_STATUS) + '\t' + st);
+  tcpSend(QString(SIP_SET_STATUS) + '\t' + st + '\t' + mood);
 }
 
 void SipHandler::connectMe()
@@ -163,7 +165,9 @@ void SipHandler::handleConnectUser(const QString &username, const QString &passw
 
 void SipHandler::handleSetStatus(const unsigned int status, const QString &mood)
 {
-  tcpSend(QString(SIP_SET_STATUS) + '\t' + status + '\t' + mood);
+  QString st = QString::number(status);
+
+  tcpSend(QString(SIP_SET_STATUS) + '\t' + st + '\t' + mood);
 }
 
 void SipHandler::handleListContacts()
