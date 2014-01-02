@@ -103,13 +103,14 @@ void MainWindow::contactSelected()
   _ui->chatStack->setCurrentIndex(_ui->contactList->currentRow());
 }
 
-void MainWindow::callStarted()
+void MainWindow::callStarted(const bool startCall)
 {
   QListWidgetItem *tmp = _ui->contactList->currentItem();
 
   _inCall = true;
   emit changeCallButton(false);
-  emit call(tmp->data(Qt::UserRole).toUInt());
+  if (startCall)
+    emit call(tmp->data(Qt::UserRole).toUInt());
 }
 
 void MainWindow::callFinished()

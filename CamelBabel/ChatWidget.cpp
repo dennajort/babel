@@ -40,8 +40,7 @@ void ChatWidget::callClicked(const bool startCall)
     {
       _ui->callButton->setIcon(QIcon::fromTheme("call-stop"));
       _inCall = true;
-      if (startCall)
-        emit callStarted();
+      emit callStarted(startCall);
     }
   else
     {

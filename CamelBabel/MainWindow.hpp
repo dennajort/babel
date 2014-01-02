@@ -30,7 +30,7 @@ public slots:
   void		addContact();
   void		deleteContact();
   void          contactSelected();
-  void          callStarted();
+  void          callStarted(const bool startCall);
   void          callFinished();
   void          displayMessage(const QString &message);
   void          clientConnected(const bool res);

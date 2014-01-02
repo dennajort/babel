@@ -26,7 +26,7 @@ public slots:
   void        sendText();
 
 signals:
-  void        callStarted();
+  void        callStarted(const bool startCall);
   void        callFinished();
   void        sendMessageToCurrent(const QString &message);
 
