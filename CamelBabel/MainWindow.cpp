@@ -303,17 +303,14 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
       _ui->contactList->addItem(item);
       _ui->chatStack->addWidget(chat);
     }
-  else
-    {
-      if (status == 0)
-        item->setIcon(_offlineImg);
-      else if (status == 1)
-        item->setIcon(_availableImg);
-      else if (status == 2)
-        item->setIcon(_doNotDisturbImg);
-      else
-        item->setIcon(_awayImg);
-    }
+    if (status == 0)
+      item->setIcon(_offlineImg);
+    else if (status == 1)
+      item->setIcon(_availableImg);
+    else if (status == 2)
+      item->setIcon(_doNotDisturbImg);
+    else
+      item->setIcon(_awayImg);
 }
 
 QListWidgetItem *MainWindow::getContactById(const unsigned int id)
