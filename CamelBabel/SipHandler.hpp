@@ -32,7 +32,6 @@ private slots:
   void		socketError(QAbstractSocket::SocketError socketError);
   void          handleCreateAccount(const QString &username, const QString &password);
   void          handleConnectUser(const QString &username, const QString &password);
-  void		handleSetStatus(const unsigned int status, const QString &mood);
   void		handleListContacts();
   void		handleAddContact(const QString &contact);
   void		handleDeleteContact(const unsigned int id);

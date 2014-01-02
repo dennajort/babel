@@ -135,17 +135,17 @@ void MainWindow::clientConnected(const bool res)
       if (!currentIndex)
         {
           _trayIcon->setIcon(_availableImg);
-          _sipHandler->setStatus(0);
+          _sipHandler->setStatus(1);
         }
       else if (currentIndex == 1)
         {
           _trayIcon->setIcon(_awayImg);
-          _sipHandler->setStatus(2);
+          _sipHandler->setStatus(3);
         }
       else
         {
           _trayIcon->setIcon(_doNotDisturbImg);
-          _sipHandler->setStatus(1);
+          _sipHandler->setStatus(2);
         }
     }
   else
@@ -234,17 +234,17 @@ void MainWindow::changeStatus(int index)
   else if (!index)
     {
       _trayIcon->setIcon(_availableImg);
-      _sipHandler->setStatus(0);
+      _sipHandler->setStatus(1);
     }
   else if (index == 1)
     {
       _trayIcon->setIcon(_awayImg);
-      _sipHandler->setStatus(2);
+      _sipHandler->setStatus(3);
     }
   else if (index == 2)
     {
       _trayIcon->setIcon(_doNotDisturbImg);
-      _sipHandler->setStatus(1);
+      _sipHandler->setStatus(2);
     }
   else
     {

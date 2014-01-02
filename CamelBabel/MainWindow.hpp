@@ -47,7 +47,6 @@ public slots:
   void          message(const unsigned int id, const QString &message, const QString &date);
 
 signals:
-  void          setStatus(const unsigned int status, const QString &mood);
   void          addContact(const QString &contact);
   void          deleteContact(const unsigned int id);
   void          listContacts();
