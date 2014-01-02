@@ -64,7 +64,7 @@ void RTPCallManager::readPendingDatagrams()
 void RTPCallManager::initSocket()
 {
     _udpSocket = new QUdpSocket(this);
-    _udpSocket->bind(QHostAddress::Any, 4242);
+    _udpSocket->bind(QHostAddress::Any, 4243);
     connect(_udpSocket, SIGNAL(readyRead()),
             this, SLOT(readPendingDatagrams()));
 }

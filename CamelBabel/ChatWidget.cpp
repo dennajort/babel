@@ -31,7 +31,7 @@ void ChatWidget::appendMessage(const QString &name, const QString &date, const Q
 
 void ChatWidget::startCall(const QString &ip)
 {
-  _rtpCallManager->call(ip, 1337);
+  _rtpCallManager->call(ip, 4243);
 }
 
 void ChatWidget::callClicked(const bool startCall)
