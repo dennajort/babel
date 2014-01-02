@@ -22,8 +22,12 @@ include_directories(include)
 
 add_executable(server ${SOURCES} ${HEADERS})
 
+### PTHREAD
+target_link_libraries(server pthread)
+
 ### BOOST
-find_package(Boost 1.40.0 COMPONENTS system REQUIRED)
+add_definitions(-DBOOST_THREAD_USE_LIB=1)
+find_package(Boost 1.49.0 COMPONENTS system thread REQUIRED)
 link_directories(${Boost_LIBRARY_DIRS})
 include_directories(${Boost_INCLUDE_DIR})
 target_link_libraries(server ${Boost_LIBRARIES})
