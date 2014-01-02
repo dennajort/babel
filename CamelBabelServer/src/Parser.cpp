@@ -445,7 +445,7 @@ Parser::caseDeleteContactId()
 void
 Parser::caseDeclineCall()
 {
-  std::string	tmp("CLINE_CALL\t");
+  std::string	tmp("LINE_CALL\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
