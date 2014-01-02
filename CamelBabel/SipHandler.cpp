@@ -18,9 +18,6 @@ SipHandler::SipHandler(QObject *parent) :
   connect(this, SIGNAL(error(QString)),
           parent, SLOT(disconnected()));
 
-
-  connect(parent, SIGNAL(setStatus(const unsigned int, const QString&)),
-          this, SLOT(handleSetStatus(const unsigned int, const QString&)));
   connect(parent, SIGNAL(listContacts()),
 	  this, SLOT(handleListContacts()));
   connect(parent, SIGNAL(addContact(const QString&)),
@@ -161,13 +158,6 @@ void SipHandler::handleConnectUser(const QString &username, const QString &passw
   sha1.addData(byteArray);
   tcpSend(QString(SIP_CONNECT) + '\t' + username + '\t' + sha1.result().toHex());
   _state = CONNECT;
-}
-
-void SipHandler::handleSetStatus(const unsigned int status, const QString &mood)
-{
-  QString st = QString::number(status);
-
-  tcpSend(QString(SIP_SET_STATUS) + '\t' + st + '\t' + mood);
 }
 
 void SipHandler::handleListContacts()
