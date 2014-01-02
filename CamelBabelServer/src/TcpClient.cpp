@@ -49,34 +49,40 @@ void	TcpClient::send(const std::string &data)
 	      boost::bind(&TcpClient::handleWrite, shared_from_this(), boost::asio::placeholders::error));
 }
 
+void	TcpClient::sendLine(const std::string &line)
+{
+  send(line + "\n");
+  std::cout << "SEND: " << line << std::endl;
+}
+
 void	TcpClient::sendHello()
 {
-  send((boost::format("HELLO\t%1%\t%2%\n") % _id % _salt).str());
+  sendLine((boost::format("HELLO\t%1%\t%2%") % _id % _salt).str());
 }
 
 void	TcpClient::sendResp(unsigned int code, const std::string &msg)
 {
-  send((boost::format("RESP\t%1%\t%2%\n") % code % msg).str());
+  sendLine((boost::format("RESP\t%1%\t%2%") % code % msg).str());
 }
 
 void	TcpClient::sendContact(unsigned int id, const std::string &username, unsigned int state, const std::string &mood)
 {
-  send((boost::format("CONTACT\t%1%\t%2%\t%3%\t%4%\n") % id % username % state % mood).str());
+  sendLine((boost::format("CONTACT\t%1%\t%2%\t%3%\t%4%") % id % username % state % mood).str());
 }
 
 void	TcpClient::sendCall(unsigned int id)
 {
-  send((boost::format("CALL\t%1%\n") % id).str());
+  sendLine((boost::format("CALL\t%1%") % id).str());
 }
 
 void	TcpClient::sendContactIp(unsigned int id, const std::string &addr)
 {
-  send((boost::format("CONTACT_IP\t%1%\t%2%\n") % id % addr).str());
+  sendLine((boost::format("CONTACT_IP\t%1%\t%2%") % id % addr).str());
 }
 
 void	TcpClient::sendDeclinedCall(unsigned int id)
 {
-  send((boost::format("DECLINED_CALL\t%1%\n") % id).str());
+  sendLine((boost::format("DECLINED_CALL\t%1%") % id).str());
 }
 
 void	TcpClient::handleLine(const boost::system::error_code& error, std::size_t size)

@@ -22,6 +22,7 @@ public:
 
   void	start();
   void	send(const std::string &);
+  void	sendLine(const std::string &);
 
   // Protocol abstraction
   void	sendHello();
