@@ -26,7 +26,9 @@ ChatWidget::~ChatWidget()
 
 void ChatWidget::appendMessage(const QString &name, const QString &date, const QString &message)
 {
-  _ui->chatText->append("<b><font color=\"#D00000\">(" + date + ") " + name + ": </font></b>" + message);
+  QDateTime timestamp;
+  timestamp.setTime_t(date.toInt());
+  _ui->chatText->append("<b><font color=\"#D00000\">(" + timestamp.toString(Qt::SystemLocaleShortDate) + ") " + name + ": </font></b>" + message);
 }
 
 void ChatWidget::startCall(const QString &ip)
@@ -61,9 +63,9 @@ void ChatWidget::sendText()
 {
   if(!_ui->userInput->text().isEmpty())
     {
-      QTime time = QTime::currentTime();
+      QDateTime time = QDateTime::currentDateTime();
       emit sendMessageToCurrent(_ui->userInput->text().replace('\t', "    "));
-      _ui->chatText->append("<b><font color=\"#3333CC\">(" + time.toString() + ") " +_me + ": </font></b>" + _ui->userInput->text());
+      _ui->chatText->append("<b><font color=\"#3333CC\">(" + time.toString(Qt::SystemLocaleShortDate) + ") " +_me + ": </font></b>" + _ui->userInput->text());
       _ui->userInput->clear();
     }
 }
