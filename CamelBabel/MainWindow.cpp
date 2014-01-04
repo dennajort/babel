@@ -224,12 +224,8 @@ void MainWindow::addContactResult(bool res)
     emit listContacts();
 }
 
-//
-// A verifier
-//
 void MainWindow::changeStatus(int index)
 {
-  qDebug() << "MainWindow::changeStatus";
   if (!_sipHandler->isConnected() && index < 3)
     _sipHandler->connectMe();
   else if (!index)
@@ -250,7 +246,7 @@ void MainWindow::changeStatus(int index)
   else
     {
       _trayIcon->setIcon(_offlineImg);
-      _ui->contactList->clear();
+      clearContactList();
       if (_sipHandler->isConnected())
         _sipHandler->disconnectMe();
     }
@@ -358,6 +354,12 @@ void MainWindow::moveContactToPos(const QString &contact, const int pos)
         _ui->chatStack->setCurrentIndex(pos);
         return;
       }
+}
+
+void MainWindow::clearContactList()
+{
+  for (int i = 1; i < _ui->contactList->count(); ++i)
+    _ui->contactList->removeItemWidget(_ui->contactList->item(i));
 }
 
 void MainWindow::createTrayIcon()

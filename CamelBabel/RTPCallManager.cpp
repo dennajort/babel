@@ -8,7 +8,8 @@
 #include "rtp.hpp"
 
 RTPCallManager::RTPCallManager(QObject *parent) :
-  QObject(parent)
+  QObject(parent),
+  _rtpPort(4243)
 {
   _audioAPI = createPortAudio(24000, 960,
                               std::bind(&RTPCallManager::handleAudio, this,
@@ -64,9 +65,11 @@ void RTPCallManager::readPendingDatagrams()
 void RTPCallManager::initSocket()
 {
     _udpSocket = new QUdpSocket(this);
-    _udpSocket->bind(QHostAddress::Any, 4243);
-    connect(_udpSocket, SIGNAL(readyRead()),
-            this, SLOT(readPendingDatagrams()));
+    if (_udpSocket->bind(QHostAddress::Any, _rtpPort))
+     connect(_udpSocket, SIGNAL(readyRead()),
+             this, SLOT(readPendingDatagrams()));
+    else
+      emit criticalError(QString("Error while binding UDP Socket on port ") + _rtpPort);
 }
 
 void RTPCallManager::processRTPDatagram(QByteArray *datagram)
@@ -74,11 +77,6 @@ void RTPCallManager::processRTPDatagram(QByteArray *datagram)
   t_rtp         *rtp = reinterpret_cast<t_rtp*>(datagram->data());
   size_t        rtpHeaderLength;
 
-//  qDebug() << "size: " << datagram->size() << " >= " << sizeof(rtp)
-//           << "rtp_ver = " << rtp->rtp_ver
-//           << "rtp_cc = " << rtp->rtp_cc
-//           << "rtp_ts = " << qFromBigEndian(rtp->rtp_ts)
-//           << "rtp_type = " << rtp->rtp_type;
   if (static_cast<size_t>(datagram->size()) < sizeof(*rtp)
       || rtp->rtp_ver != 2
       || rtp->rtp_cc > 15

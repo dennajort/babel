@@ -67,6 +67,7 @@ private:
   void          moveListItemToPos(const int fromPos, const int toPos);
   void          moveChatWidgetToPos(const int fromPos, const int toPos);
   void          moveContactToPos(const QString &contact, const int pos);
+  void          clearContactList();
   void		createTrayIcon();
   void		writeSettings();
   void		readSettings();

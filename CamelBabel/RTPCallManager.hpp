@@ -14,6 +14,7 @@ typedef std::priority_queue<RTPPacket*> RTPPacketQueue;
 class RTPCallManager : public QObject
 {
   Q_OBJECT
+
 public:
   explicit  RTPCallManager(QObject *parent = 0);
   virtual   ~RTPCallManager();
@@ -24,6 +25,9 @@ public slots:
 
 private slots:
   void readPendingDatagrams();
+
+signals:
+  void criticalError(const QString &error);
 
 private:
   void initSocket();
@@ -45,6 +49,8 @@ private:
 
   IAudioAPI           *_audioAPI;
   IEncoder            *_encoder;
+
+  const quint16       _rtpPort;
 };
 
 #endif // RTPCALLMANAGER_HPP
