@@ -248,6 +248,7 @@ void	ServerData::handleParserAcceptCall(TcpClient::Ptr client, unsigned int id)
 	  TcpClient::Ptr	contact = _clients.left.at(id);
 	  
 	  contact->sendContactIp(client->getID(), client->getSocket().remote_endpoint().address().to_string());
+	  client->sendContactIp(contact->getID(), contact->getSocket().remote_endpoint().address().to_string());
 	}      
     }
 }

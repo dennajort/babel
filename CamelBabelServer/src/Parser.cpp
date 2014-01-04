@@ -313,7 +313,7 @@ Parser::caseSetStatusNewStatusMood()
 void
 Parser::caseSendMessage()
 {
-  std::string	tmp("ND_MESSAGE\t");
+  std::string	tmp("D_MESSAGE\t");
 
   for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
     {
