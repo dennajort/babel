@@ -4,4 +4,6 @@
 #define	MONGODB_URI		("localhost")
 #define	MONGODB_COL_USERS	("CamelBabel.users")
 
+#define	BABEL_LOGOUT_STATE	(0)
+
 #endif

@@ -47,8 +47,25 @@ void	ServerData::releaseId(unsigned int id)
 
 void	ServerData::removeClient(TcpClient::Ptr client)
 {
+  if (client->isAuthenticated())
+    {
+      mongo::auto_ptr<mongo::DBClientCursor>	cursor = _mongo.query(MONGODB_COL_USERS, BSON("contacts" << BSON("$in" << BSON_ARRAY(client->getOID()))));
+
+      while (cursor->more())
+	{
+	  mongo::BSONObj	tmp = cursor->next();
+	  unsigned int		id = tools::OIDToUint(tmp["_id"].OID());
+	  
+	  if (_clients.left.count(id) != 0)
+	    {
+	      TcpClient::Ptr	contact = _clients.left.at(id);
+	      
+	      contact->sendContact(tools::OIDToUint(client->getOID()), client->getUsername(), BABEL_LOGOUT_STATE, "");
+	    }
+	}
+      client->setAuthenticated(false);
+    }
   _clients.right.erase(client);
-  client->setAuthenticated(false);
 }
 
 void	ServerData::sendContacts(TcpClient::Ptr client)
@@ -73,7 +90,7 @@ void	ServerData::sendContacts(TcpClient::Ptr client)
 	      unsigned int	id = tools::OIDToUint(tmp["_id"].OID());
 
 	      if (_clients.left.count(id) == 0)
-		client->sendContact(id, tmp["username"].String(), 0, "");
+		client->sendContact(id, tmp["username"].String(), BABEL_LOGOUT_STATE, "");
 	      else
 		{
 		  TcpClient::Ptr	contact = _clients.left.at(id);
@@ -168,7 +185,7 @@ void	ServerData::handleParserAddContact(TcpClient::Ptr client, const std::string
 	  _mongo.update(MONGODB_COL_USERS, BSON("_id" << client->getOID()), BSON("$addToSet" << BSON("contacts" << obj["_id"].OID())));
 	  client->sendResp(200, "Contact added");
 	  if (_clients.left.count(id) == 0)
-	    client->sendContact(id, obj["username"].String(), 0, "");
+	    client->sendContact(id, obj["username"].String(), BABEL_LOGOUT_STATE, "");
 	  else
 	    {
 	      TcpClient::Ptr	contact = _clients.left.at(id);
