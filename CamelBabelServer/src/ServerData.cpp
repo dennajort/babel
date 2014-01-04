@@ -1,4 +1,5 @@
 #include	<boost/foreach.hpp>
+#include	<ctime>
 #include	"ServerData.hh"
 #include	"config.hh"
 #include	"tools.hh"
@@ -49,18 +50,19 @@ void	ServerData::removeClient(TcpClient::Ptr client)
 {
   if (client->isAuthenticated())
     {
-      mongo::auto_ptr<mongo::DBClientCursor>	cursor = _mongo.query(MONGODB_COL_USERS, BSON("contacts" << BSON("$in" << BSON_ARRAY(client->getOID()))));
+      mongo::auto_ptr<mongo::DBClientCursor>	cursor = _mongo.query(MONGODB_COL,
+								      BSON(FIELD_CONTACTS << BSON("$in" << BSON_ARRAY(client->getOID()))));
 
       while (cursor->more())
 	{
 	  mongo::BSONObj	tmp = cursor->next();
-	  unsigned int		id = tools::OIDToUint(tmp["_id"].OID());
+	  unsigned int		id = tools::OIDToUint(tmp[FIELD_ID].OID());
 	  
 	  if (_clients.left.count(id) != 0)
 	    {
 	      TcpClient::Ptr	contact = _clients.left.at(id);
 	      
-	      contact->sendContact(tools::OIDToUint(client->getOID()), client->getUsername(), BABEL_LOGOUT_STATE, "");
+	      contact->sendContact(client->getID(), client->getUsername(), BABEL_LOGOUT_STATE, "");
 	    }
 	}
       client->setAuthenticated(false);
@@ -72,25 +74,27 @@ void	ServerData::sendContacts(TcpClient::Ptr client)
 {
   if (client->isAuthenticated())
     {
-      mongo::BSONObj	obj = _mongo.findOne(MONGODB_COL_USERS, BSON("_id" << client->getOID()));
+      mongo::BSONObj	obj = _mongo.findOne(MONGODB_COL,
+					     BSON(FIELD_ID << client->getOID()));
 
       if (!obj.isEmpty())
 	{
 	  mongo::auto_ptr<mongo::DBClientCursor>	cursor;
 	  mongo::BSONArrayBuilder			builder;
 
-	  BOOST_FOREACH(mongo::BSONElement elem, obj["contacts"].Array())
+	  BOOST_FOREACH(mongo::BSONElement elem, obj[FIELD_CONTACTS].Array())
 	    {
 	      builder.append(elem.OID());
 	    }
-	  cursor = _mongo.query(MONGODB_COL_USERS, BSON("_id" << BSON("$in" << builder.arr())));
+	  cursor = _mongo.query(MONGODB_COL,
+				BSON(FIELD_ID << BSON("$in" << builder.arr())));
 	  while (cursor->more())
 	    {
 	      mongo::BSONObj	tmp = cursor->next();
-	      unsigned int	id = tools::OIDToUint(tmp["_id"].OID());
+	      unsigned int	id = tools::OIDToUint(tmp[FIELD_ID].OID());
 
 	      if (_clients.left.count(id) == 0)
-		client->sendContact(id, tmp["username"].String(), BABEL_LOGOUT_STATE, "");
+		client->sendContact(id, tmp[FIELD_USERNAME].String(), BABEL_LOGOUT_STATE, "");
 	      else
 		{
 		  TcpClient::Ptr	contact = _clients.left.at(id);
@@ -104,13 +108,15 @@ void	ServerData::sendContacts(TcpClient::Ptr client)
 
 void	ServerData::handleParserCreateAccount(TcpClient::Ptr client, const std::string &username, const std::string &password)
 {
-  if (!_mongo.findOne(MONGODB_COL_USERS, BSON("username" << username)).isEmpty())
+  if (!_mongo.findOne(MONGODB_COL, BSON(FIELD_USERNAME << username)).isEmpty())
     client->sendResp(403, "Username already taken");
   else
     {
       mongo::BSONArrayBuilder	arb;
+      mongo::BSONArrayBuilder	arbb;
 
-      _mongo.insert(MONGODB_COL_USERS, BSON(mongo::GENOID << "username" << username << "password" << tools::lower(password) << "contacts" << arb.arr()));
+      _mongo.insert(MONGODB_COL,
+		    BSON(mongo::GENOID << FIELD_USERNAME << username << FIELD_PASSWORD << tools::lower(password) << FIELD_CONTACTS << arb.arr() << FIELD_MESSAGES << arbb.arr()));
       client->sendResp(200, "Created");
     }
 }
@@ -121,14 +127,15 @@ void	ServerData::handleParserConnect(TcpClient::Ptr client, const std::string &u
     client->sendResp(405, "Already connected");
   else
     {
-      mongo::BSONObj	obj = _mongo.findOne(MONGODB_COL_USERS, BSON("username" << username));
+      mongo::BSONObj	obj = _mongo.findOne(MONGODB_COL,
+					     BSON(FIELD_USERNAME << username));
       
-      if (!obj.isEmpty() && tools::sha1(obj["password"].String() + client->getSalt()) == tools::lower(password))
+      if (!obj.isEmpty() && tools::sha1(obj[FIELD_PASSWORD].String() + client->getSalt()) == tools::lower(password))
 	{
 	  client->setAuthenticated(true);
-	  client->setOID(obj["_id"].OID());
+	  client->setOID(obj[FIELD_ID].OID());
 	  client->setUsername(username);
-	  _clients.insert(clients_type::value_type(tools::OIDToUint(client->getOID()), client));
+	  _clients.insert(clients_type::value_type(client->getID(), client));
 	  client->sendResp(200, "Connected");
 	  sendContacts(client);
 	}
@@ -143,7 +150,8 @@ void	ServerData::handleParserSetStatus(TcpClient::Ptr client, unsigned int state
     client->sendResp(403, "Unauthorized to change status");
   else
     {
-      mongo::auto_ptr<mongo::DBClientCursor>	cursor = _mongo.query(MONGODB_COL_USERS, BSON("contacts" << BSON("$in" << BSON_ARRAY(client->getOID()))));
+      mongo::auto_ptr<mongo::DBClientCursor>	cursor = _mongo.query(MONGODB_COL,
+								      BSON(FIELD_CONTACTS << BSON("$in" << BSON_ARRAY(client->getOID()))));
 
       client->setMood(mood);
       client->setState(state);
@@ -151,13 +159,13 @@ void	ServerData::handleParserSetStatus(TcpClient::Ptr client, unsigned int state
       while (cursor->more())
 	{
 	  mongo::BSONObj	tmp = cursor->next();
-	  unsigned int		id = tools::OIDToUint(tmp["_id"].OID());
+	  unsigned int		id = tools::OIDToUint(tmp[FIELD_ID].OID());
 	  
 	  if (_clients.left.count(id) != 0)
 	    {
 	      TcpClient::Ptr	contact = _clients.left.at(id);
 	      
-	      contact->sendContact(tools::OIDToUint(client->getOID()), client->getUsername(), state, mood);
+	      contact->sendContact(client->getID(), client->getUsername(), state, mood);
 	    }
 	}
     }
@@ -174,18 +182,21 @@ void	ServerData::handleParserAddContact(TcpClient::Ptr client, const std::string
     client->sendResp(403, "Unauthorized to add contact");
   else
     {
-      mongo::BSONObj	obj = _mongo.findOne(MONGODB_COL_USERS, BSON("username" << username));
+      mongo::BSONObj	obj = _mongo.findOne(MONGODB_COL,
+					     BSON(FIELD_USERNAME << username));
 
       if (obj.isEmpty())
 	client->sendResp(403, "User does not exists");
       else
 	{
-	  unsigned int		id = tools::OIDToUint(obj["_id"].OID());
+	  unsigned int		id = tools::OIDToUint(obj[FIELD_ID].OID());
 
-	  _mongo.update(MONGODB_COL_USERS, BSON("_id" << client->getOID()), BSON("$addToSet" << BSON("contacts" << obj["_id"].OID())));
+	  _mongo.update(MONGODB_COL,
+			BSON(FIELD_ID << client->getOID()),
+			BSON("$addToSet" << BSON(FIELD_CONTACTS << obj[FIELD_ID].OID())));
 	  client->sendResp(200, "Contact added");
 	  if (_clients.left.count(id) == 0)
-	    client->sendContact(id, obj["username"].String(), BABEL_LOGOUT_STATE, "");
+	    client->sendContact(id, obj[FIELD_USERNAME].String(), BABEL_LOGOUT_STATE, "");
 	  else
 	    {
 	      TcpClient::Ptr	contact = _clients.left.at(id);
@@ -202,7 +213,9 @@ void	ServerData::handleParserDeleteContact(TcpClient::Ptr client, unsigned int i
     client->sendResp(403, "Unauthorized to delete contact");
   else
     {
-      _mongo.update(MONGODB_COL_USERS, BSON("_id" << client->getOID()), BSON("$pull" << BSON("contacts" << tools::uintToOID(id))));
+      _mongo.update(MONGODB_COL,
+		    BSON(FIELD_ID << client->getOID()),
+		    BSON("$pull" << BSON(FIELD_CONTACTS << tools::uintToOID(id))));
       client->sendResp(200, "Contact deleted");
     }
 }
@@ -219,7 +232,7 @@ void	ServerData::handleParserCallId(TcpClient::Ptr client, unsigned int id)
 	{
 	  TcpClient::Ptr	contact = _clients.left.at(id);
 	  
-	  contact->sendCall(tools::OIDToUint(client->getOID()));
+	  contact->sendCall(client->getID());
 	}      
     }
 }
@@ -234,7 +247,7 @@ void	ServerData::handleParserAcceptCall(TcpClient::Ptr client, unsigned int id)
 	{
 	  TcpClient::Ptr	contact = _clients.left.at(id);
 	  
-	  contact->sendContactIp(tools::OIDToUint(client->getOID()), client->getSocket().remote_endpoint().address().to_string());
+	  contact->sendContactIp(client->getID(), client->getSocket().remote_endpoint().address().to_string());
 	}      
     }
 }
@@ -249,8 +262,55 @@ void	ServerData::handleParserDeclineCall(TcpClient::Ptr client, unsigned int id)
 	{
 	  TcpClient::Ptr	contact = _clients.left.at(id);
 	  
-	  contact->sendDeclinedCall(tools::OIDToUint(client->getOID()));
+	  contact->sendDeclinedCall(client->getID());
 	}      
+    }
+}
+
+void	ServerData::handleParserSendMessage(TcpClient::Ptr client, unsigned int dest, const std::string &msg)
+{
+  if (!client->isAuthenticated())
+    client->sendResp(403, "Unauthorized");
+  else
+    {
+      if (_clients.left.count(dest) != 0)
+	{
+	  TcpClient::Ptr	contact = _clients.left.at(dest);
+
+	  contact->sendMessage(client->getID(), msg, time(NULL));
+	}
+      else
+	_mongo.update(MONGODB_COL,
+		      BSON(FIELD_ID << tools::uintToOID(dest)),
+		      BSON("$push" << BSON(FIELD_MESSAGES << BSON(FIELD_MESS_FROM << client->getOID() << FIELD_MESS_MESS << msg << FIELD_MESS_DATE << mongo::DATENOW))));
+      client->sendResp(200, "Message sent");
+    }
+}
+
+void	ServerData::handleParserGetMessages(TcpClient::Ptr client, unsigned int from)
+{
+  if (!client->isAuthenticated())
+    client->sendResp(403, "Unauthorized");
+  else
+    {
+      mongo::BSONObj	obj = _mongo.findOne(MONGODB_COL,
+					     BSON(FIELD_ID << client->getOID()));
+
+      if (!obj.isEmpty())
+	{
+	  mongo::OID	fromOID = tools::uintToOID(from);
+
+	  BOOST_FOREACH(mongo::BSONElement elem, obj[FIELD_MESSAGES].Array())
+	    {
+	      mongo::BSONObj	message = elem.Obj();
+
+	      if (message[FIELD_MESS_FROM].OID() == fromOID)
+		client->sendMessage(from, message[FIELD_MESS_MESS].String(), message[FIELD_MESS_DATE].Date().millis / 1000);
+	    }
+	  _mongo.update(MONGODB_COL,
+			BSON(FIELD_ID << client->getOID()),
+			BSON("$pull" << BSON(FIELD_MESS_FROM << fromOID)));
+	}
     }
 }
 

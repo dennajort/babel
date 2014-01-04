@@ -31,6 +31,7 @@ public:
   void	sendCall(unsigned int);
   void	sendContactIp(unsigned int, const std::string &);
   void	sendDeclinedCall(unsigned int);
+  void	sendMessage(unsigned int, const std::string &, unsigned long long);
 
   // Asio handlers
   void	handleLine(const boost::system::error_code &, std::size_t);
@@ -41,6 +42,7 @@ public:
   bool				isAuthenticated() const;
   const std::string		&getSalt() const;
   const mongo::OID		&getOID() const;
+  unsigned int			getID() const;
   unsigned int			getState() const;
   const std::string		&getMood() const;
   const std::string		&getUsername() const;

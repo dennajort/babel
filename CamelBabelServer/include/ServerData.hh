@@ -32,8 +32,8 @@ public:
   void	handleParserCallId(TcpClient::Ptr, unsigned int);
   void	handleParserAcceptCall(TcpClient::Ptr, unsigned int);
   void	handleParserDeclineCall(TcpClient::Ptr, unsigned int);
-  void	handleParserSendMessage(TcpClient::Ptr, unsigned int, const std::string &) {}
-  void	handleParserGetMessages(TcpClient::Ptr, unsigned int) {}
+  void	handleParserSendMessage(TcpClient::Ptr, unsigned int, const std::string &);
+  void	handleParserGetMessages(TcpClient::Ptr, unsigned int);
 
 private:
   ServerData();

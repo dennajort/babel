@@ -4,6 +4,7 @@
 #include	"TcpClient.hh"
 #include	"ServerData.hh"
 #include	"Parser.hh"
+#include	"tools.hh"
 
 using namespace boost::asio;
 
@@ -85,6 +86,11 @@ void	TcpClient::sendDeclinedCall(unsigned int id)
   sendLine((boost::format("DECLINED_CALL\t%1%") % id).str());
 }
 
+void	TcpClient::sendMessage(unsigned int id, const std::string &msg, unsigned long long date)
+{
+  sendLine((boost::format("MESSAGE\t%1%\t%2%\t%3%") % id % msg % date).str());
+}
+
 void	TcpClient::handleLine(const boost::system::error_code& error, std::size_t size)
 {
   if (!error)
@@ -133,6 +139,11 @@ const std::string	&TcpClient::getSalt() const
 const mongo::OID	&TcpClient::getOID() const
 {
   return _oid;
+}
+
+unsigned int		TcpClient::getID() const
+{
+  return tools::OIDToUint(_oid);
 }
 
 unsigned int		TcpClient::getState() const
