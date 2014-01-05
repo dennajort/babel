@@ -32,6 +32,7 @@ public:
   void	sendContactIp(Ptr);
   void	sendContactIp(unsigned int, const std::string &, unsigned int);
   void	sendDeclinedCall(unsigned int);
+  void	sendEndCall(unsigned int);
   void	sendMessage(unsigned int, const std::string &, unsigned long long);
 
   // Asio handlers

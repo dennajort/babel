@@ -270,6 +270,21 @@ void	ServerData::handleParserDeclineCall(TcpClient::Ptr client, unsigned int id)
     }
 }
 
+void	ServerData::handleParserEndCall(TcpClient::Ptr client, unsigned int id)
+{
+  if (!client->isAuthenticated())
+    client->sendResp(403, "You must be authenticated");
+  else
+    {
+      if (_clients.left.count(id) != 0)
+	{
+	  TcpClient::Ptr	contact = _clients.left.at(id);
+	  
+	  contact->sendEndCall(client->getID());
+	}      
+    }  
+}
+
 void	ServerData::handleParserSendMessage(TcpClient::Ptr client, unsigned int dest, const std::string &msg)
 {
   if (!client->isAuthenticated())

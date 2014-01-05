@@ -91,6 +91,11 @@ void	TcpClient::sendDeclinedCall(unsigned int id)
   sendLine((boost::format("DECLINED_CALL\t%1%") % id).str());
 }
 
+void	TcpClient::sendEndCall(unsigned int id)
+{
+  sendLine((boost::format("END_CALL\t%1%") % id).str());  
+}
+
 void	TcpClient::sendMessage(unsigned int id, const std::string &msg, unsigned long long date)
 {
   sendLine((boost::format("MESSAGE\t%1%\t%2%\t%3%") % id % msg % date).str());
