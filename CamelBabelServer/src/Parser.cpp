@@ -30,6 +30,41 @@ Parser::parse(const std::string &line)
       return caseFirstA();
     case 'D':
       return caseFirstD();
+    case 'E':
+      return caseEndCall();
+    default:
+      return ServerData::getInstance().handleParserError(_client);
+    }
+}
+
+void
+Parser::caseEndCall()
+{
+  std::string   tmp("ND_CALL\t");
+
+  for (std::string::iterator i = tmp.begin(); i != tmp.end(); i++)
+    {
+      _i++;
+      if (*i != *_i)
+        return ServerData::getInstance().handleParserError(_client);
+    }
+  _buff1 = "";
+  return caseEndCallContactId();
+}
+
+void
+Parser::caseEndCallContactId()
+{
+  _i++;
+  switch (*_i)
+    {
+    case '\n':
+      if (_buff1.empty())
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserEndCall(_client, boost::lexical_cast<unsigned int>(_buff1));
+    case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+      _buff1 += *_i;
+      return caseEndCallContactId();
     default:
       return ServerData::getInstance().handleParserError(_client);
     }
@@ -163,15 +198,34 @@ Parser::caseConnectPassword()
   _i++;
   switch (*_i)
     {
-    case '\n':
+    case '\t':
       if (_buff2.empty())
         return ServerData::getInstance().handleParserError(_client);
-      return ServerData::getInstance().handleParserConnect(_client, _buff1, _buff2);
-    case '\t':
+      _buff3 = "";
+      return caseConnectUdpPort();
+    case '\n':
       return ServerData::getInstance().handleParserError(_client);
     default:
       _buff2 += *_i;
       return caseConnectPassword();
+    }
+}
+
+void
+Parser::caseConnectUdpPort()
+{
+  _i++;
+  switch (*_i)
+    {
+    case '\n':
+      if (_buff3.empty())
+        return ServerData::getInstance().handleParserError(_client);
+      return ServerData::getInstance().handleParserConnect(_client, _buff1, _buff2, boost::lexical_cast<unsigned int>(_buff3));
+    case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+      _buff3 += *_i;
+      return caseConnectUdpPort();
+    default:
+      return ServerData::getInstance().handleParserError(_client);
     }
 }
 

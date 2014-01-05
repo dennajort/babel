@@ -19,9 +19,13 @@ private:
   void	caseFirstD();
   void	caseFirstDE();
 
+  void	caseEndCall();
+  void	caseEndCallContactId();
+
   void	caseConnect();
   void	caseConnectUsername();
   void	caseConnectPassword();
+  void	caseConnectUdpPort();
 
   void	caseCreateAccount();
   void	caseCreateAccountUsername();
@@ -57,6 +61,7 @@ private:
   std::string			_line;
   std::string::const_iterator	_i;
   TcpClient::Ptr		_client;
+  std::string			_buff3;
   std::string			_buff2;
   std::string			_buff1;
 };
