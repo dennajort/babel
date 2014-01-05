@@ -135,7 +135,7 @@ void	ServerData::handleParserConnect(TcpClient::Ptr client, const std::string &u
 	  client->setAuthenticated(true);
 	  client->setOID(obj[FIELD_ID].OID());
 	  client->setUsername(username);
-	  client->getPort(port);
+	  client->setPort(port);
 	  _clients.insert(clients_type::value_type(client->getID(), client));
 	  client->sendResp(200, "Connected");
 	  sendContacts(client);
