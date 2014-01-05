@@ -19,6 +19,8 @@ public:
   explicit  RTPCallManager(QObject *parent = 0);
   virtual   ~RTPCallManager();
 
+  void setRtpPort(quint16 rtpPort);
+
 public slots:
   void call(const QString &ip, quint16 port);
   void finishCall();
@@ -50,7 +52,7 @@ private:
   IAudioAPI           *_audioAPI;
   IEncoder            *_encoder;
 
-  const quint16       _rtpPort;
+  quint16             _rtpPort;
 };
 
 #endif // RTPCALLMANAGER_HPP

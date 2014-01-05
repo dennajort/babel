@@ -22,6 +22,7 @@ public:
   ~SipHandler();
   bool          isConnected();
   void          setStatus(const unsigned int status);
+  void          sendEndCall();
 
 public slots:
   void		connectMe();
@@ -31,7 +32,7 @@ private slots:
   void		readData();
   void		socketError(QAbstractSocket::SocketError socketError);
   void          handleCreateAccount(const QString &username, const QString &password);
-  void          handleConnectUser(const QString &username, const QString &password);
+  void          handleConnectUser(const QString &username, const QString &password, const QString &udpPort);
   void		handleListContacts();
   void		handleAddContact(const QString &contact);
   void		handleDeleteContact(const unsigned int id);
@@ -48,8 +49,9 @@ signals:
   void          clientConnected(const bool res);
   void		contact(const unsigned int id, const QString &username, const unsigned int status, const QString &mood);
   void          callRequest(const unsigned int id);
-  void		contactIp(const unsigned int id, const QString &ip);
+  void		contactIp(const unsigned int id, const QString &ip, quint16 port);
   void          declinedCall(const unsigned int id);
+  void          endCall();
   void		addContactResult(const bool result);
   void		message(const unsigned int id, const QString &message, const QString &date);
 
@@ -61,6 +63,7 @@ private:
   void          handleCallRequest(const QStringList &stringList);
   void		handleContactIp(const QStringList &stringList);
   void          handleDeclinedCall(const QStringList &stringList);
+  void          handleEndCall();
   void		handleCreateResponse(const QStringList &stringList);
   void          handleConnectResponse(const QStringList &stringList);
   void		handleAddContactResponse(const QStringList &stringList);

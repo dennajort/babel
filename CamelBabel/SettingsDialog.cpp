@@ -21,6 +21,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
   _ui->serverLineEdit->setText(settings.value("server", "localhost").toString());
   _ui->portLineEdit->setText(settings.value("port", "4242").toString());
   _ui->moodLineEdit->setText(settings.value("mood", "I love CamelBabel !").toString());
+  _ui->callPortLineEdit->setText(settings.value("callPort", "4243").toString());
   settings.endGroup();
 }
 
@@ -46,6 +47,7 @@ void SettingsDialog::saveSettings()
   settings.setValue("server", _ui->serverLineEdit->text());
   settings.setValue("port", _ui->portLineEdit->text());
   settings.setValue("mood", _ui->moodLineEdit->text());
+  settings.setValue("callPort", _ui->callPortLineEdit->text());
   settings.endGroup();
   if (!_ui->usernameLineEdit->text().isEmpty() && !_ui->passwordLineEdit->text().isEmpty())
     hide();

@@ -45,10 +45,12 @@ SipHandler::SipHandler(QObject *parent) :
           parent, SLOT(contact(const unsigned int, const QString&, const unsigned int, const QString&)));
   connect(this, SIGNAL(callRequest(const unsigned int)),
           parent, SLOT(callRequest(const unsigned int)));
-  connect(this, SIGNAL(contactIp(const unsigned int, const QString&)),
-          parent, SLOT(contactIp(const unsigned int, const QString&)));
+  connect(this, SIGNAL(contactIp(const unsigned int, const QString&, quint16)),
+          parent, SLOT(contactIp(const unsigned int, const QString&, quint16)));
   connect(this, SIGNAL(declinedCall(const unsigned int)),
           parent, SLOT(declinedCall(const unsigned int)));
+  connect(this, SIGNAL(endCall()),
+          parent, SLOT(endCall()));
   connect(this, SIGNAL(addContactResult(bool)),
           parent, SLOT(addContactResult(bool)));
   connect(this, SIGNAL(message(const unsigned int, const QString&, const QString&)),
@@ -72,6 +74,11 @@ void SipHandler::setStatus(const unsigned int status)
   QString mood = settings.value("account/mood", "I love CamelBabel !").toString();
 
   tcpSend(QString(SIP_SET_STATUS) + '\t' + st + '\t' + mood);
+}
+
+void SipHandler::sendEndCall()
+{
+  tcpSend(SIP_END_CALL);
 }
 
 void SipHandler::connectMe()
@@ -107,10 +114,12 @@ void SipHandler::readData()
 		handleContact(stringList);
 	      else if (stringList.size() == 2 && stringList[0] == SIP_CALL_REQUEST)
 		handleCallRequest(stringList);
-	      else if (stringList.size() == 3 && stringList[0] == SIP_CONTACT_IP)
+	      else if (stringList.size() == 4 && stringList[0] == SIP_CONTACT_IP)
 		handleContactIp(stringList);
 	      else if (stringList.size() == 2 && stringList[0] == SIP_DECLINED)
 		handleDeclinedCall(stringList);
+	      else if (stringList.size() == 1 && stringList[0] == SIP_END_CALL)
+		handleEndCall();
 	      else if (stringList.size() == 4 && stringList[0] == SIP_MESSAGE)
 		handleMessage(stringList);
 	      else if (_state == CREATE && stringList.size() == 3 && stringList[0] == SIP_RESP &&
@@ -146,7 +155,7 @@ void SipHandler::handleCreateAccount(const QString &username, const QString &pas
   _state = CREATE;
 }
 
-void SipHandler::handleConnectUser(const QString &username, const QString &password)
+void SipHandler::handleConnectUser(const QString &username, const QString &password, const QString &udpPort)
 {
   QCryptographicHash	sha1(QCryptographicHash::Sha1);
   QByteArray	       	byteArray;
@@ -156,7 +165,7 @@ void SipHandler::handleConnectUser(const QString &username, const QString &passw
   sha1.reset();
   byteArray += _hash;
   sha1.addData(byteArray);
-  tcpSend(QString(SIP_CONNECT) + '\t' + username + '\t' + sha1.result().toHex());
+  tcpSend(QString(SIP_CONNECT) + '\t' + username + '\t' + sha1.result().toHex() + '\t' + udpPort);
   _state = CONNECT;
 }
 
@@ -231,7 +240,8 @@ void SipHandler::getHelloInfos(const QStringList &stringList)
                           settings.value("account/password", "").toString());
   else
       handleConnectUser(settings.value("account/username", "").toString(),
-                        settings.value("account/password", "").toString());
+                        settings.value("account/password", "").toString(),
+                        settings.value("account/callPort", "4243").toString());
 }
 
 void SipHandler::handleError(const QStringList &stringList)
@@ -251,12 +261,17 @@ void SipHandler::handleCallRequest(const QStringList &stringList)
 
 void SipHandler::handleContactIp(const QStringList &stringList)
 {
-  emit contactIp(stringList[1].toUInt(), stringList[2]);
+  emit contactIp(stringList[1].toUInt(), stringList[2], stringList[3].toUInt());
 }
 
 void SipHandler::handleDeclinedCall(const QStringList &stringList)
 {
   emit declinedCall(stringList[1].toUInt());
+}
+
+void SipHandler::handleEndCall()
+{
+  emit endCall();
 }
 
 void SipHandler::handleCreateResponse(const QStringList &stringList)
@@ -267,7 +282,9 @@ void SipHandler::handleCreateResponse(const QStringList &stringList)
   else
     {
       QSettings settings;
-      handleConnectUser(settings.value("account/username", "").toString(), settings.value("account/password", "").toString());
+      handleConnectUser(settings.value("account/username", "").toString(),
+                        settings.value("account/password", "").toString(),
+                        settings.value("account/callPort", "4243").toString());
       settings.setValue("account/register", false);
     }
 }

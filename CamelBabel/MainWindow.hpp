@@ -30,7 +30,7 @@ public slots:
   void		addContact();
   void		deleteContact();
   void          contactSelected();
-  void          callStarted(const bool startCall);
+  void          callStarted(bool startCall);
   void          callFinished();
   void          displayMessage(const QString &message);
   void          clientConnected(const bool res);
@@ -39,8 +39,9 @@ public slots:
   void		contact(const unsigned int id, const QString &username,
 			const unsigned int status, const QString &mood);
   void          callRequest(const unsigned int id);
-  void          contactIp(const unsigned int id, const QString &ip);
+  void          contactIp(const unsigned int id, const QString &ip, quint16 port);
   void          declinedCall(const unsigned int id);
+  void          endCall();
   void          addContactResult(bool res);
   void          changeStatus(int index);
   void          sendMessageToCurrent(const QString &message);

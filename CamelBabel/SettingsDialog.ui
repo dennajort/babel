@@ -164,6 +164,16 @@
          <item row="2" column="1">
           <widget class="QLineEdit" name="moodLineEdit"/>
          </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="callPortLabel">
+           <property name="text">
+            <string>Call Port</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="callPortLineEdit"/>
+         </item>
         </layout>
        </item>
        <item>

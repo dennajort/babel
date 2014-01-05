@@ -103,7 +103,7 @@ void MainWindow::contactSelected()
   _ui->chatStack->setCurrentIndex(_ui->contactList->currentRow());
 }
 
-void MainWindow::callStarted(const bool startCall)
+void MainWindow::callStarted(bool startCall)
 {
   QListWidgetItem *tmp = _ui->contactList->currentItem();
 
@@ -117,6 +117,7 @@ void MainWindow::callFinished()
 {
   _inCall = false;
   emit changeCallButton(true);
+  _sipHandler->sendEndCall();
 }
 
 void MainWindow::displayMessage(const QString &message)
@@ -128,11 +129,11 @@ void MainWindow::clientConnected(const bool res)
 {
   int   currentIndex = _ui->statusCombo->currentIndex();
 
-  qDebug() << "MainWindow::clientConnected";
   if (res && currentIndex >= 0 && currentIndex < 3)
     {
       QSettings settings;
       _me = settings.value("account/username", "").toString();
+      _rtpCallManager->setRtpPort(settings.value("account/callPort", 4243).toInt());
       if (!currentIndex)
         {
           _trayIcon->setIcon(_availableImg);
@@ -155,7 +156,6 @@ void MainWindow::clientConnected(const bool res)
 
 void MainWindow::disconnected()
 {
-  qDebug() << "MainWindow::disconnected";
   if (_ui->statusCombo->currentIndex() != 3)
     {
       _ui->statusCombo->setCurrentIndex(3);
@@ -198,13 +198,13 @@ void MainWindow::callRequest(const unsigned int id)
     emit declineCall(id);
 }
 
-void MainWindow::contactIp(const unsigned int id, const QString &ip)
+void MainWindow::contactIp(const unsigned int id, const QString &ip, quint16 port)
 {
   QListWidgetItem       *item = getContactById(id);
 
   if (item != NULL)
     {
-      (reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item))))->startCall(ip);
+      (reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item))))->startCall(ip, port);
     }
 }
 
@@ -216,6 +216,12 @@ void MainWindow::declinedCall(const unsigned int id)
     {
       (reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item))))->callClicked();
     }
+}
+
+void MainWindow::endCall()
+{
+  _inCall = false;
+  emit changeCallButton(true);
 }
 
 void MainWindow::addContactResult(bool res)
@@ -289,8 +295,8 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
       item = new QListWidgetItem(_offlineImg, contact);
       ChatWidget		*chat = new ChatWidget(_me, contact, _inCall, _rtpCallManager, this);
 
-      connect(chat, SIGNAL(callStarted(const bool)),
-              this, SLOT(callStarted(const bool)));
+      connect(chat, SIGNAL(callStarted(bool)),
+              this, SLOT(callStarted(bool)));
       connect(chat, SIGNAL(callFinished()),
               this, SLOT(callFinished()));
       connect(this, SIGNAL(changeCallButton(bool)),

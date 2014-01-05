@@ -9,19 +9,21 @@
 
 RTPCallManager::RTPCallManager(QObject *parent) :
   QObject(parent),
-  _rtpPort(4243)
+  _udpSocket(new QUdpSocket(this)),
+  _rtpPort(-1)
 {
   _audioAPI = createPortAudio(24000, 960,
                               std::bind(&RTPCallManager::handleAudio, this,
                                         std::placeholders::_1, std::placeholders::_2,
                                         std::placeholders::_3, std::placeholders::_4));
   _encoder = new Opus(24000, 960);
-  initSocket();
 }
 
 RTPCallManager::~RTPCallManager()
 {
+  delete _udpSocket;
   delete _audioAPI;
+  delete _encoder;
   _packetQueueMutex.lock();
   while (!_packetQueue.empty())
     {
@@ -29,6 +31,24 @@ RTPCallManager::~RTPCallManager()
       _packetQueue.pop();
     }
   _packetQueueMutex.unlock();
+}
+
+void RTPCallManager::setRtpPort(quint16 rtpPort)
+{
+  if (rtpPort == _rtpPort)
+    return ;
+  _udpSocket->close();
+  if (_udpSocket->bind(QHostAddress::Any, rtpPort))
+    {
+      connect(_udpSocket, SIGNAL(readyRead()),
+              this, SLOT(readPendingDatagrams()));
+      _rtpPort = rtpPort;
+    }
+  else
+    {
+      emit criticalError(QString("Error while binding UDP Socket on port ") + _rtpPort);
+      _rtpPort = -1;
+    }
 }
 
 void RTPCallManager::call(const QString &ip, quint16 port)
@@ -60,16 +80,6 @@ void RTPCallManager::readPendingDatagrams()
         else
           delete datagram;
       }
-}
-
-void RTPCallManager::initSocket()
-{
-    _udpSocket = new QUdpSocket(this);
-    if (_udpSocket->bind(QHostAddress::Any, _rtpPort))
-     connect(_udpSocket, SIGNAL(readyRead()),
-             this, SLOT(readPendingDatagrams()));
-    else
-      emit criticalError(QString("Error while binding UDP Socket on port ") + _rtpPort);
 }
 
 void RTPCallManager::processRTPDatagram(QByteArray *datagram)
