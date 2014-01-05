@@ -29,7 +29,8 @@ public:
   void	sendResp(unsigned int, const std::string &);
   void	sendContact(unsigned int, const std::string &, unsigned int, const std::string &);
   void	sendCall(unsigned int);
-  void	sendContactIp(unsigned int, const std::string &);
+  void	sendContactIp(Ptr);
+  void	sendContactIp(unsigned int, const std::string &, unsigned int);
   void	sendDeclinedCall(unsigned int);
   void	sendMessage(unsigned int, const std::string &, unsigned long long);
 
@@ -46,6 +47,8 @@ public:
   unsigned int			getState() const;
   const std::string		&getMood() const;
   const std::string		&getUsername() const;
+  std::string			getIP() const;
+  unsigned int			getPort() const;
 
   // Setters
   void				setAuthenticated(bool);
@@ -53,6 +56,7 @@ public:
   void				setState(unsigned int);
   void				setMood(const std::string &);
   void				setUsername(const std::string &);
+  void				setPort(unsigned int);
 
 private:
   TcpClient(boost::asio::io_service &);
@@ -67,6 +71,7 @@ private:
   boost::asio::streambuf	_inBuffer;
   std::queue<std::string>	_outBuffer;
   std::string			_username;
+  unsigned int			_port;
 };
 
 #endif

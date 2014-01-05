@@ -121,7 +121,7 @@ void	ServerData::handleParserCreateAccount(TcpClient::Ptr client, const std::str
     }
 }
 
-void	ServerData::handleParserConnect(TcpClient::Ptr client, const std::string &username, const std::string &password)
+void	ServerData::handleParserConnect(TcpClient::Ptr client, const std::string &username, const std::string &password, unsigned int port)
 {
   if (client->isAuthenticated())
     client->sendResp(405, "Already connected");
@@ -135,6 +135,7 @@ void	ServerData::handleParserConnect(TcpClient::Ptr client, const std::string &u
 	  client->setAuthenticated(true);
 	  client->setOID(obj[FIELD_ID].OID());
 	  client->setUsername(username);
+	  client->getPort(port);
 	  _clients.insert(clients_type::value_type(client->getID(), client));
 	  client->sendResp(200, "Connected");
 	  sendContacts(client);
@@ -247,8 +248,8 @@ void	ServerData::handleParserAcceptCall(TcpClient::Ptr client, unsigned int id)
 	{
 	  TcpClient::Ptr	contact = _clients.left.at(id);
 	  
-	  contact->sendContactIp(client->getID(), client->getSocket().remote_endpoint().address().to_string());
-	  client->sendContactIp(contact->getID(), contact->getSocket().remote_endpoint().address().to_string());
+	  contact->sendContactIp(client);
+	  client->sendContactIp(contact);
 	}      
     }
 }

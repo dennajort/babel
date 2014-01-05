@@ -76,9 +76,14 @@ void	TcpClient::sendCall(unsigned int id)
   sendLine((boost::format("CALL\t%1%") % id).str());
 }
 
-void	TcpClient::sendContactIp(unsigned int id, const std::string &addr)
+void	TcpClient::sendContactIp(TcpClient::Ptr contact)
 {
-  sendLine((boost::format("CONTACT_IP\t%1%\t%2%") % id % addr).str());
+  sendContactIp(contact->getID(), contact->getIP(), contact->getPort());
+}
+
+void	TcpClient::sendContactIp(unsigned int id, const std::string &addr, unsigned int port)
+{
+  sendLine((boost::format("CONTACT_IP\t%1%\t%2%\t%3%") % id % addr % port).str());
 }
 
 void	TcpClient::sendDeclinedCall(unsigned int id)
@@ -161,6 +166,16 @@ const std::string	&TcpClient::getUsername() const
   return _username;
 }
 
+std::string		TcpClient::getIP() const
+{
+  return _socket.remote_endpoint().address().to_string();
+}
+
+unsigned int		TcpClient::getPort() const
+{
+  return _port;
+}
+
 void	TcpClient::setAuthenticated(bool authenticated)
 {
   _isAuthenticated = authenticated;
@@ -184,4 +199,9 @@ void	TcpClient::setMood(const std::string &mood)
 void	TcpClient::setUsername(const std::string &username)
 {
   _username = username;
+}
+
+void	TcpClient::setPort(unsigned int port)
+{
+  _port = port;
 }

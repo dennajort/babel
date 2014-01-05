@@ -24,7 +24,7 @@ public:
   // Parser handlers
   void	handleParserError(TcpClient::Ptr);
   void	handleParserCreateAccount(TcpClient::Ptr, const std::string &, const std::string &);
-  void	handleParserConnect(TcpClient::Ptr, const std::string &, const std::string &);
+  void	handleParserConnect(TcpClient::Ptr, const std::string &, const std::string &, unsigned int);
   void	handleParserSetStatus(TcpClient::Ptr, unsigned int, const std::string &);
   void	handleParserListContacts(TcpClient::Ptr);
   void	handleParserAddContact(TcpClient::Ptr, const std::string &);
