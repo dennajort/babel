@@ -233,6 +233,7 @@ void	ServerData::handleParserCallId(TcpClient::Ptr client, unsigned int id)
 	{
 	  TcpClient::Ptr	contact = _clients.left.at(id);
 	  
+	  client->sendResp(200, "Waiting for answer");
 	  contact->sendCall(client->getID());
 	}      
     }
