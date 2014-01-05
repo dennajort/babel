@@ -118,7 +118,7 @@ void SipHandler::readData()
 		handleContactIp(stringList);
 	      else if (stringList.size() == 2 && stringList[0] == SIP_DECLINED)
 		handleDeclinedCall(stringList);
-	      else if (stringList.size() == 1 && stringList[0] == SIP_END_CALL)
+	      else if (stringList.size() == 2 && stringList[0] == SIP_END_CALL)
 		handleEndCall(stringList);
 	      else if (stringList.size() == 4 && stringList[0] == SIP_MESSAGE)
 		handleMessage(stringList);
