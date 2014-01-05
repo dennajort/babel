@@ -22,7 +22,7 @@ public:
   ~SipHandler();
   bool          isConnected();
   void          setStatus(const unsigned int status);
-  void          sendEndCall();
+  void          sendEndCall(const unsigned int id);
 
 public slots:
   void		connectMe();
@@ -51,7 +51,7 @@ signals:
   void          callRequest(const unsigned int id);
   void		contactIp(const unsigned int id, const QString &ip, quint16 port);
   void          declinedCall(const unsigned int id);
-  void          endCall();
+  void          endCall(const unsigned int id);
   void		addContactResult(const bool result);
   void		message(const unsigned int id, const QString &message, const QString &date);
 
@@ -63,7 +63,7 @@ private:
   void          handleCallRequest(const QStringList &stringList);
   void		handleContactIp(const QStringList &stringList);
   void          handleDeclinedCall(const QStringList &stringList);
-  void          handleEndCall();
+  void          handleEndCall(const QStringList &stringList);
   void		handleCreateResponse(const QStringList &stringList);
   void          handleConnectResponse(const QStringList &stringList);
   void		handleAddContactResponse(const QStringList &stringList);

@@ -49,8 +49,8 @@ SipHandler::SipHandler(QObject *parent) :
           parent, SLOT(contactIp(const unsigned int, const QString&, quint16)));
   connect(this, SIGNAL(declinedCall(const unsigned int)),
           parent, SLOT(declinedCall(const unsigned int)));
-  connect(this, SIGNAL(endCall()),
-          parent, SLOT(endCall()));
+  connect(this, SIGNAL(endCall(const unsigned int)),
+          parent, SLOT(endCall(const unsigned int)));
   connect(this, SIGNAL(addContactResult(bool)),
           parent, SLOT(addContactResult(bool)));
   connect(this, SIGNAL(message(const unsigned int, const QString&, const QString&)),
@@ -76,9 +76,9 @@ void SipHandler::setStatus(const unsigned int status)
   tcpSend(QString(SIP_SET_STATUS) + '\t' + st + '\t' + mood);
 }
 
-void SipHandler::sendEndCall()
+void SipHandler::sendEndCall(unsigned int id)
 {
-  tcpSend(SIP_END_CALL);
+  tcpSend(QString(SIP_END_CALL) + '\t' + QString::number(id));
 }
 
 void SipHandler::connectMe()
@@ -119,7 +119,7 @@ void SipHandler::readData()
 	      else if (stringList.size() == 2 && stringList[0] == SIP_DECLINED)
 		handleDeclinedCall(stringList);
 	      else if (stringList.size() == 1 && stringList[0] == SIP_END_CALL)
-		handleEndCall();
+		handleEndCall(stringList);
 	      else if (stringList.size() == 4 && stringList[0] == SIP_MESSAGE)
 		handleMessage(stringList);
 	      else if (_state == CREATE && stringList.size() == 3 && stringList[0] == SIP_RESP &&
@@ -269,9 +269,9 @@ void SipHandler::handleDeclinedCall(const QStringList &stringList)
   emit declinedCall(stringList[1].toUInt());
 }
 
-void SipHandler::handleEndCall()
+void SipHandler::handleEndCall(const QStringList &stringList)
 {
-  emit endCall();
+  emit endCall(stringList[1].toUInt());
 }
 
 void SipHandler::handleCreateResponse(const QStringList &stringList)

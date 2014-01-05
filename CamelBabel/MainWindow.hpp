@@ -41,7 +41,7 @@ public slots:
   void          callRequest(const unsigned int id);
   void          contactIp(const unsigned int id, const QString &ip, quint16 port);
   void          declinedCall(const unsigned int id);
-  void          endCall();
+  void          endCall(const unsigned int id);
   void          addContactResult(bool res);
   void          changeStatus(int index);
   void          sendMessageToCurrent(const QString &message);

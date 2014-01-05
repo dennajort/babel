@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
   _ui(new Ui::MainWindow),
   _availableImg(":/images/available.png"),
   _awayImg(":/images/away.png"),
-  _doNotDisturbImg(":/image/do_not_disturb.png"),
+  _doNotDisturbImg(":/images/do_not_disturb.png"),
   _offlineImg(":/images/offline.png"),
   _trayIcon(new QSystemTrayIcon(this)),
   _trayIconMenu(new QMenu(this)),
@@ -115,9 +115,11 @@ void MainWindow::callStarted(bool startCall)
 
 void MainWindow::callFinished()
 {
+  QListWidgetItem *tmp = _ui->contactList->currentItem();
+
   _inCall = false;
   emit changeCallButton(true);
-  _sipHandler->sendEndCall();
+  _sipHandler->sendEndCall(tmp->data(Qt::UserRole).toUInt());
 }
 
 void MainWindow::displayMessage(const QString &message)
@@ -214,14 +216,18 @@ void MainWindow::declinedCall(const unsigned int id)
 
   if (item != NULL)
     {
-      (reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item))))->callClicked();
+      reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item)))->callClicked();
     }
 }
 
-void MainWindow::endCall()
+void MainWindow::endCall(const unsigned int id)
 {
-  _inCall = false;
-  emit changeCallButton(true);
+  QListWidgetItem     *item = getContactById(id);
+
+  if (item != NULL)
+    {
+      reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item)))->callClicked(true);
+    }
 }
 
 void MainWindow::addContactResult(bool res)
@@ -287,7 +293,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::addChat(const unsigned int id, const QString &contact, const unsigned int status)
 {
-  (void)status;
   QListWidgetItem       *item = getContactById(id);
 
   if (item == NULL)
@@ -305,14 +310,14 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
       _ui->contactList->addItem(item);
       _ui->chatStack->addWidget(chat);
     }
-    if (status == 0)
-      item->setIcon(_offlineImg);
-    else if (status == 1)
-      item->setIcon(_availableImg);
-    else if (status == 2)
-      item->setIcon(_doNotDisturbImg);
-    else
-      item->setIcon(_awayImg);
+  if (status == 0)
+    item->setIcon(_offlineImg);
+  else if (status == 1)
+    item->setIcon(_availableImg);
+  else if (status == 2)
+    item->setIcon(_doNotDisturbImg);
+  else
+    item->setIcon(_awayImg);
 }
 
 QListWidgetItem *MainWindow::getContactById(const unsigned int id)
