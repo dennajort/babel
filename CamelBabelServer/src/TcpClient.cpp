@@ -66,9 +66,19 @@ void	TcpClient::sendResp(unsigned int code, const std::string &msg)
   sendLine((boost::format("RESP\t%1%\t%2%") % code % msg).str());
 }
 
+void	TcpClient::sendContact(TcpClient::Ptr contact)
+{
+  sendContact(contact->getID(), contact->getUsername(), contact->getState(), contact->getMood());
+}
+
 void	TcpClient::sendContact(unsigned int id, const std::string &username, unsigned int state, const std::string &mood)
 {
   sendLine((boost::format("CONTACT\t%1%\t%2%\t%3%\t%4%") % id % username % state % mood).str());
+}
+
+void	TcpClient::sendCall(TcpClient::Ptr contact)
+{
+  sendCall(contact->getID());
 }
 
 void	TcpClient::sendCall(unsigned int id)
@@ -86,9 +96,19 @@ void	TcpClient::sendContactIp(unsigned int id, const std::string &addr, unsigned
   sendLine((boost::format("CONTACT_IP\t%1%\t%2%\t%3%") % id % addr % port).str());
 }
 
+void	TcpClient::sendDeclinedCall(TcpClient::Ptr contact)
+{
+  sendDeclinedCall(contact->getID());
+}
+
 void	TcpClient::sendDeclinedCall(unsigned int id)
 {
   sendLine((boost::format("DECLINED_CALL\t%1%") % id).str());
+}
+
+void	TcpClient::sendEndCall(TcpClient::Ptr contact)
+{
+  sendEndCall(contact->getID());
 }
 
 void	TcpClient::sendEndCall(unsigned int id)

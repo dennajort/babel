@@ -27,11 +27,15 @@ public:
   // Protocol abstraction
   void	sendHello();
   void	sendResp(unsigned int, const std::string &);
+  void	sendContact(Ptr);
   void	sendContact(unsigned int, const std::string &, unsigned int, const std::string &);
+  void	sendCall(Ptr);
   void	sendCall(unsigned int);
   void	sendContactIp(Ptr);
   void	sendContactIp(unsigned int, const std::string &, unsigned int);
+  void	sendDeclinedCall(Ptr);
   void	sendDeclinedCall(unsigned int);
+  void	sendEndCall(Ptr);
   void	sendEndCall(unsigned int);
   void	sendMessage(unsigned int, const std::string &, unsigned long long);
 

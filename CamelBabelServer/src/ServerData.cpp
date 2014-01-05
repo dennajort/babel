@@ -99,7 +99,7 @@ void	ServerData::sendContacts(TcpClient::Ptr client)
 		{
 		  TcpClient::Ptr	contact = _clients.left.at(id);
 
-		  client->sendContact(id, contact->getUsername(), contact->getState(), contact->getMood());
+		  client->sendContact(contact);
 		}
 	    }
 	}
@@ -166,7 +166,7 @@ void	ServerData::handleParserSetStatus(TcpClient::Ptr client, unsigned int state
 	    {
 	      TcpClient::Ptr	contact = _clients.left.at(id);
 	      
-	      contact->sendContact(client->getID(), client->getUsername(), state, mood);
+	      contact->sendContact(client);
 	    }
 	}
     }
@@ -202,7 +202,7 @@ void	ServerData::handleParserAddContact(TcpClient::Ptr client, const std::string
 	    {
 	      TcpClient::Ptr	contact = _clients.left.at(id);
 	      
-	      client->sendContact(id, contact->getUsername(), contact->getState(), contact->getMood());
+	      client->sendContact(contact);
 	    }
 	}
     }
@@ -234,7 +234,7 @@ void	ServerData::handleParserCallId(TcpClient::Ptr client, unsigned int id)
 	  TcpClient::Ptr	contact = _clients.left.at(id);
 	  
 	  client->sendResp(200, "Waiting for answer");
-	  contact->sendCall(client->getID());
+	  contact->sendCall(client);
 	}      
     }
 }
@@ -265,8 +265,8 @@ void	ServerData::handleParserDeclineCall(TcpClient::Ptr client, unsigned int id)
 	{
 	  TcpClient::Ptr	contact = _clients.left.at(id);
 	  
-	  contact->sendDeclinedCall(client->getID());
-	}      
+	  contact->sendDeclinedCall(client);
+	}
     }
 }
 
@@ -280,7 +280,7 @@ void	ServerData::handleParserEndCall(TcpClient::Ptr client, unsigned int id)
 	{
 	  TcpClient::Ptr	contact = _clients.left.at(id);
 	  
-	  contact->sendEndCall(client->getID());
+	  contact->sendEndCall(client);
 	}      
     }  
 }
