@@ -12,11 +12,11 @@ RTPCallManager::RTPCallManager(QObject *parent) :
   _udpSocket(new QUdpSocket(this)),
   _rtpPort(-1)
 {
-  _audioAPI = createPortAudio(24000, 960,
+  _audioAPI = createPortAudio(24000, 480,
                               std::bind(&RTPCallManager::handleAudio, this,
                                         std::placeholders::_1, std::placeholders::_2,
                                         std::placeholders::_3, std::placeholders::_4));
-  _encoder = new Opus(24000, 960);
+  _encoder = new Opus(24000, 480);
 }
 
 RTPCallManager::~RTPCallManager()

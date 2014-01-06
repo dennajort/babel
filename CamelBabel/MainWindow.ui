@@ -52,6 +52,9 @@
             <height>0</height>
            </size>
           </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::CustomContextMenu</enum>
+          </property>
           <property name="currentRow">
            <number>0</number>
           </property>
@@ -234,6 +237,11 @@
     <string>Activer</string>
    </property>
   </action>
+  <action name="actionDeleteContact">
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
@@ -322,9 +330,9 @@
   </connection>
   <connection>
    <sender>contactList</sender>
-   <signal>itemSelectionChanged()</signal>
+   <signal>customContextMenuRequested(QPoint)</signal>
    <receiver>MainWindow</receiver>
-   <slot>contactSelected()</slot>
+   <slot>showContextMenuForContactList(QPoint)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>86</x>
@@ -352,6 +360,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionDeleteContact</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>deleteContact()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>231</x>
+     <y>189</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>about()</slot>
@@ -363,5 +387,6 @@
   <slot>connectRegister()</slot>
   <slot>changeMainWindowState()</slot>
   <slot>changeStatus(int)</slot>
+  <slot>showContextMenuForContactList(QPoint)</slot>
  </slots>
 </ui>

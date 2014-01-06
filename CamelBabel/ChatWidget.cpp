@@ -31,6 +31,14 @@ void ChatWidget::appendMessage(const QString &name, const QString &date, const Q
   _ui->chatText->append("<b><font color=\"#D00000\">(" + timestamp.toString(Qt::SystemLocaleShortDate) + ") " + name + ": </font></b>" + message);
 }
 
+void ChatWidget::sendCall()
+{
+}
+
+void ChatWidget::endCall()
+{
+}
+
 void ChatWidget::startCall(const QString &ip, quint16 port)
 {
   _rtpCallManager->call(ip, port);

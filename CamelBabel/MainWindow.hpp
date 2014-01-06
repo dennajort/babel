@@ -46,6 +46,7 @@ public slots:
   void          changeStatus(int index);
   void          sendMessageToCurrent(const QString &message);
   void          message(const unsigned int id, const QString &message, const QString &date);
+  void          showContextMenuForContactList(const QPoint &pos);
 
 signals:
   void          addContact(const QString &contact);

@@ -102,6 +102,7 @@ void SipHandler::readData()
   while (_socket->canReadLine())
     {
       line = _socket->readLine();
+      qDebug() << "Recv line: "<< line;
       if (!line.isEmpty())
         {
           line.resize(line.length() - 1);
@@ -135,6 +136,11 @@ void SipHandler::readData()
 						     stringList[1] == SIP_NOTFOUND ||
 						     stringList[1] == SIP_ALREADYCONNECTED))
 		handleError(stringList);
+	      else
+		{
+		  qDebug() << stringList;
+		  qDebug() << "No matching";
+		}
 	    }
         }
     }

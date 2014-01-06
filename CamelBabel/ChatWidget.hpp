@@ -18,6 +18,8 @@ public:
                          RTPCallManager *rtpCallManager, QWidget *parent = 0);
   virtual     ~ChatWidget();
   void        appendMessage(const QString &name, const QString &date, const QString &message);
+  void        sendCall();
+  void        endCall();
   void        startCall(const QString &ip, quint16 port);
   bool        isInCall() const {return (_inCall);}
   

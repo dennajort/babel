@@ -60,7 +60,7 @@ void MainWindow::about()
   QMessageBox::about(this, "CamelBabel About",
                      "CamelBabel is a VOIP Client\n"        \
                      "CamelCorp is a camel company\n"                                 \
-                     "All camel reserved to post_l, farcy_b, gossel_j, lingua_a, teisse_l, zanchi_r");
+                     "All camel reserved to farcy_b, gossel_j, lingua_a, post_l, teisse_l, zanchi_r");
 }
 
 void MainWindow::settings()
@@ -85,11 +85,12 @@ void MainWindow::deleteContact()
     {
       int ret = QMessageBox::warning(this, "CamelBabel", "You are about to remove " + item->text()
                                      + " from your contact list.\n"	\
-                                     "Do you want to save the modification?",
-                                     QMessageBox::Cancel | QMessageBox::Save);
-      if (ret == QMessageBox::Save)
+                                     "Do you really want to delete this contact?",
+                                     QMessageBox::Cancel | QMessageBox::Ok);
+      if (ret == QMessageBox::Ok)
         {
           QWidget		*widget = _ui->chatStack->currentWidget();
+          emit deleteContact(item->data(Qt::UserRole).toUInt());
           _ui->contactList->takeItem(_ui->contactList->row(item));
           _ui->chatStack->removeWidget(widget);
           delete item;
@@ -161,7 +162,7 @@ void MainWindow::disconnected()
   if (_ui->statusCombo->currentIndex() != 3)
     {
       _ui->statusCombo->setCurrentIndex(3);
-      _trayIcon->showMessage("Disconnected", "You've been disconnected !",
+      _trayIcon->showMessage("Disconnected", "You've been disconnected!",
                             QSystemTrayIcon::MessageIcon(2), 4000);
       QTimer::singleShot(10000, _sipHandler, SLOT(connectMe()));
     }
@@ -277,6 +278,18 @@ void MainWindow::message(const unsigned int id, const QString &message, const QS
     (reinterpret_cast<ChatWidget*>(_ui->chatStack->widget(_ui->contactList->row(item))))->appendMessage(item->text(), date, message);
 }
 
+void MainWindow::showContextMenuForContactList(const QPoint &pos)
+{
+  QListWidgetItem       *item = _ui->contactList->itemAt(pos);
+
+  if (item && _ui->contactList->row(item) != 0)
+  {
+    QMenu contextMenu("Context menu", this);
+    contextMenu.addAction(_ui->actionDeleteContact);
+    contextMenu.exec(QCursor::pos());
+  }
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
   if (_trayIcon->isVisible())
@@ -297,9 +310,9 @@ void MainWindow::addChat(const unsigned int id, const QString &contact, const un
 
   if (item == NULL)
     {
-      item = new QListWidgetItem(_offlineImg, contact);
       ChatWidget		*chat = new ChatWidget(_me, contact, _inCall, _rtpCallManager, this);
 
+      item = new QListWidgetItem(_offlineImg, contact);
       connect(chat, SIGNAL(callStarted(bool)),
               this, SLOT(callStarted(bool)));
       connect(chat, SIGNAL(callFinished()),
@@ -370,7 +383,10 @@ void MainWindow::moveContactToPos(const QString &contact, const int pos)
 void MainWindow::clearContactList()
 {
   for (int i = 1; i < _ui->contactList->count(); ++i)
-    _ui->contactList->removeItemWidget(_ui->contactList->item(i));
+    {
+      delete _ui->contactList->takeItem(i);
+      _ui->chatStack->removeWidget(_ui->chatStack->widget(i));
+    }
 }
 
 void MainWindow::createTrayIcon()
