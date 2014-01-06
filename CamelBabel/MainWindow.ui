@@ -376,6 +376,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>contactList</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>contactSelected()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>96</x>
+     <y>192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>231</x>
+     <y>189</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>about()</slot>
