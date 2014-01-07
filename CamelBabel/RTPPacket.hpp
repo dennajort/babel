@@ -25,8 +25,6 @@ public:
   int getPayloadSize() const {return (_payloadSize);}
   quint16 getSequence() const {return (qFromBigEndian(_rtp->rtp_seq));}
 
-  bool operator<(const RTPPacket &p) const {return (qFromBigEndian(_rtp->rtp_seq) < qFromBigEndian(p._rtp->rtp_seq));}
-
 private:
   QByteArray      *_datagram;
   t_rtp           *_rtp;
@@ -34,5 +32,13 @@ private:
   int             _payloadSize;
 };
 
+class CompareRTPPacket
+{
+public:
+  bool operator()(const RTPPacket *p1, const RTPPacket *p2)
+  {
+    return (p1->getSequence() > p2->getSequence());
+  }
+};
 
 #endif // RTPPACKET_HPP

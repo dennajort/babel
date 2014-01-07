@@ -9,7 +9,7 @@
 #include "IAudioAPI.hpp"
 #include "IEncoder.hpp"
 
-typedef std::priority_queue<RTPPacket*> RTPPacketQueue;
+typedef std::priority_queue<RTPPacket*, std::vector<RTPPacket*>, CompareRTPPacket> RTPPacketQueue;
 
 class RTPCallManager : public QObject
 {

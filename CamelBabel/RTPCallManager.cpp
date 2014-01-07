@@ -145,17 +145,15 @@ void RTPCallManager::handleAudio(const float *input, float *output,
   _packetQueueMutex.lock();
   if (!_packetQueue.empty())
     {
-      while (_packetQueue.size() > 8)
+      while (_packetQueue.size() > 80)
         {
           delete _packetQueue.top();
           _packetQueue.pop();
         }
-      RTPPacket *packet = _packetQueue.top();
-      _packetQueue.pop();
-      _encoder->decode(packet->getPayload(), packet->getPayloadSize(), output);
-      delete packet;
+        RTPPacket *packet = _packetQueue.top();
+        _encoder->decode(packet->getPayload(), packet->getPayloadSize(), output);
+        _packetQueue.pop();
+        delete packet;
     }
-  else
-    _encoder->decode(NULL, 0, output);
   _packetQueueMutex.unlock();
 }
